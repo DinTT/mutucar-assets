@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUTUCAR | Etapa 2: El Guardián de las Llaves</title>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Open+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-brand:           #2E4D23;
+            --color-brand-hover:     #1E3316;
+            --color-brand-light:     #E8EFDF;
+            --color-brand-mid:       #BDC7B1;
+            --color-brand-text:      #C7D9DF;
+            --color-bg:              #F1EDE4;
+            --color-surface:         #FFFFFF;
+            --color-border:          #C7D9DF;
+            --color-border-mid:      #75A5BD;
+            --color-text-primary:    #292648;
+            --color-text-body:       #555555;
+            --color-text-muted:      #4F6B78;
+            --color-success:         #26443C;
+            --color-success-bg:      #D5EFD8;
+            --color-success-border:  #91D2C2;
+            --color-success-text:    #26443C;
+            --color-error:           #872F3E;
+            --color-error-bg:        #FBEAE8;
+            --color-error-border:    #F6A08F;
+            --color-error-text:      #562F35;
+            --color-warning:         #B8860B;
+            --color-warning-bg:      #FEFAD9;
+            --color-warning-border:  #DFB67C;
+            --color-warning-text:    #5A3D14;
+            --header-from:           #292648;
+            --header-to:             #2E4D23;
+            --shadow-card:  0 1px 3px 0 rgba(0,0,0,0.08), 0 1px 2px -1px rgba(0,0,0,0.06);
+            --shadow-brand: 0 4px 12px rgba(46, 77, 35, 0.25);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--color-bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: var(--color-text-body);
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, .brand-font { font-family: 'Chakra Petch', sans-serif; }
+
+        .email-container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid var(--color-border);
+            overflow: hidden;
+            margin-bottom: 60px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .email-meta {
+            background: #f9f9f9;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            color: #666;
+        }
+        .email-meta div { margin-bottom: 5px; }
+        .email-meta strong { color: var(--color-text-primary); }
+
+        .email-header {
+            background: linear-gradient(135deg, var(--header-from), var(--header-to));
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .email-header h2 { margin: 0; font-size: 24px; text-transform: uppercase; }
+
+        .email-body { padding: 30px; line-height: 1.7; text-align: center; }
+        .email-body h3 { color: var(--color-text-primary); margin-top: 0; }
+
+        .instruction-box {
+            background: var(--color-bg);
+            border-left: 4px solid var(--color-brand);
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            font-style: italic;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 260px;
+            margin: 10px auto;
+            padding: 15px 30px;
+            background: var(--color-brand);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-family: 'Chakra Petch', sans-serif;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            box-shadow: var(--shadow-brand);
+        }
+        .btn-action:hover { background: var(--color-brand-hover); transform: scale(1.05); }
+
+        /* ESTILOS DEL MODAL DE INSTRUCCIONES INICIALES */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            border: 2px solid var(--color-brand);
+            text-align: center;
+            animation: modalSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-progress-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .modal-progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--color-border);
+            transition: all 0.3s ease;
+        }
+        .modal-progress-dot.active {
+            background: var(--color-brand);
+            transform: scale(1.3);
+            box-shadow: 0 0 8px var(--color-brand);
+        }
+        @keyframes modalSlideUp { from { opacity: 0; transform: translate(-50%, calc(-50% + 30px)); } to { opacity: 1; transform: translate(-50%, -50%); } }
+
+        .modal-step { display: none; animation: fadeIn 0.4s ease; }
+        .modal-step.active { display: block; }
+        .modal-step h3 {
+            font-family: 'Chakra Petch', sans-serif;
+            color: var(--color-brand);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .modal-step p {
+            font-family: 'Open Sans', sans-serif;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: var(--color-text-body);
+        }
+        .modal-nav {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .btn-modal {
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-family: 'Chakra Petch', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            flex: 1;
+        }
+        .btn-back {
+            background: #eee;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+        .btn-back:hover { background: #ddd; }
+        .btn-next {
+            background: var(--color-brand);
+            color: white;
+            box-shadow: var(--shadow-brand);
+        }
+        .btn-next:hover { background: var(--color-brand-hover); transform: scale(1.05); }
+
+
+        /* ESTILOS DEL MODAL DE FEEDBACK DE ERROR */
+        .feedback-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 520px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            border: 2px solid var(--color-error);
+            z-index: 1000;
+            text-align: center;
+            animation: modalSlideUp 0.35s ease;
+        }
+        .feedback-panel.active { display: block; }
+        
+        .feedback-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.72);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+        }
+        .feedback-overlay.active { display: block; }
+
+        .feedback-icon { font-size: 42px; margin-bottom: 10px; }
+        .feedback-panel h3 {
+            font-family: 'Chakra Petch', sans-serif;
+            color: var(--color-error);
+            margin: 0 0 15px;
+            text-transform: uppercase;
+        }
+        .feedback-panel p { line-height: 1.6; color: var(--color-text-body); margin: 10px 0; }
+
+        .feedback-explanation {
+            background: var(--color-error-bg);
+            border: 1px solid var(--color-error-border);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .feedback-explanation strong { display: block; color: var(--color-error-text); margin-bottom: 6px; }
+
+        .feedback-lesson {
+            background: var(--color-warning-bg);
+            border: 1px solid var(--color-warning-border);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0 20px;
+            text-align: left;
+        }
+        .feedback-lesson strong { display: block; color: var(--color-warning-text); margin-bottom: 6px; }
+
+        .btn-feedback {
+            width: 100%;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 50px;
+            background: var(--color-brand);
+            color: white;
+            font-family: 'Chakra Petch', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: var(--shadow-brand);
+            transition: all 0.2s;
+        }
+        .btn-feedback:hover { background: var(--color-brand-hover); transform: scale(1.02); }
+
+        /* PANEL DE ACIERTO */
+        .success-panel {
+            display: none;
+            position: absolute;
+            left: calc(100% + 20px);
+            top: 0;
+            width: 280px;
+            background: white;
+            border: 2px solid var(--color-success-border);
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            text-align: center;
+            animation: fadeIn 0.35s ease;
+        }
+        .success-panel.active { display: block; }
+        .success-panel h3 {
+            margin: 8px 0 10px;
+            color: var(--color-success-text);
+            font-family: 'Chakra Petch', sans-serif;
+            text-transform: uppercase;
+        }
+        .success-panel p { font-size: 14px; line-height: 1.55; color: var(--color-text-body); }
+        
+        .robot-placeholder {
+            width: 95px;
+            height: 95px;
+            margin: 0 auto 10px;
+            border-radius: 50%;
+            background: var(--color-brand-light);
+            border: 2px solid var(--color-brand-mid);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .btn-continue {
+            width: 100%;
+            padding: 12px 18px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 50px;
+            background: var(--color-brand);
+            color: white;
+            font-family: 'Chakra Petch', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: var(--shadow-brand);
+        }
+        .btn-continue:hover { background: var(--color-brand-hover); transform: scale(1.02); }
+
+        /* ESTILOS DEL JUEGO */
+        .game-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        @media (max-width: 1050px) {
+            .success-panel {
+                position: static;
+                width: 100%;
+                margin-top: 20px;
+            }
+        }
+
+        .game-container {
+            width: 100%;
+            background: var(--color-surface);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+            display: none;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .slide-header {
+            background: linear-gradient(to right, var(--header-from), var(--header-to));
+            padding: 25px;
+            color: white;
+            text-align: center;
+        }
+        .slide-header h2 { margin: 0; font-size: 24px; text-transform: uppercase; }
+        .slide-header p { margin: 5px 0 0; opacity: 0.9; font-size: 14px; }
+
+        .progress-container { padding: 20px 30px 0; }
+        .progress-bar {
+            background-color: var(--color-border);
+            border-radius: 9999px;
+            height: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background-color: var(--color-brand);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .game-area { padding: 30px; text-align: center; }
+        .mission-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-card);
+            text-align: left;
+        }
+        .mission-card h3 { margin: 0 0 15px 0; color: var(--color-text-primary); font-size: 18px; text-align: center; }
+
+        .email-simulator {
+            background: #fdfdfd;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 14px;
+            color: #444;
+        }
+        .email-simulator hr { border: 0; border-top: 1px solid #ddd; margin: 10px 0; }
+
+        .step-question {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--color-text-primary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .options-grid { display: grid; gap: 12px; }
+        .option-btn {
+            padding: 16px;
+            background: white;
+            border: 2px solid var(--color-border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 15px;
+            text-align: left;
+            color: #444;
+            font-weight: 500;
+        }
+        .option-btn:hover { border-color: var(--color-brand); background: #f8faff; }
+        .option-btn.correct { background: var(--color-success-bg) !important; border-color: var(--color-success-border) !important; color: var(--color-success-text); font-weight: bold; }
+        .option-btn.incorrect { background: var(--color-error-bg) !important; border-color: var(--color-error-border) !important; color: var(--color-error-text); }
+
+        #feedback { margin-top: 20px; font-weight: 600; min-height: 24px; font-size: 15px; text-align: center; padding: 10px; border-radius: 8px; transition: all 0.3s; }
+
+        #reward-view { display: none; padding: 40px 30px; text-align: center; }
+
+        .btn-register {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 260px;
+            margin: 20px auto;
+            padding: 16px;
+            background: var(--color-brand);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-family: 'Chakra Petch', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-brand);
+        }
+        .btn-register:hover { transform: scale(1.05); background: var(--color-brand-hover); }
+        .next-stage-link {
+            display: block;
+            text-align: center;
+            color: var(--color-brand);
+            text-decoration: underline;
+            font-weight: bold;
+            margin-top: 10px;
+            cursor: pointer;
+            font-family: 'Chakra Petch', sans-serif;
+        }
+
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+    </style>
+</head>
+<body id="top">
+
+    <!-- SECCIÓN 1: EL CORREO (BRIEFING) -->
+    <div class="email-container" id="email-section">
+        <div class="email-meta">
+            <div><strong>De:</strong> Comando de Ciberseguridad de Mutualidad &lt;seguridad@mutucar.cl&gt;</div>
+            <div><strong>Para:</strong> Guardián en Entrenamiento</div>
+            <div><strong>Asunto:</strong> Etapa 2 de 4: El Guardián de las Llaves - Briefing Táctico</div>
+        </div>
+        <div class="email-header">
+            <h2>🛡️ TU MISIÓN DE HOY:</h2>
+        </div>
+        <div class="email-body">
+            <h3>¡Sigue avanzando, Mutuguardián!</h3>
+            <p>Has superado tu primera prueba: aprendiste a detectar las señales de un phishing escrito. Pero el peligro no siempre llega a tu bandeja de entrada.</p>
+            <p>Ahora comienza una nueva etapa de entrenamiento: <strong> La Ingeniería Social.</strong> En esta misión, el atacante no necesitará enviarte un enlace sospechoso ni cometer errores evidentes. Utilizará algo mucho más difícil de detectar: <strong>la manipulación humana.</strong></p>
+            <p>Una llamada telefónica, una voz convincente, una persona que dice tener autoridad o una situación que parece urgente pueden ser suficientes para hacerte actuar sin pensar.</p>
+            <div style="text-align: center; margin: 20px 0;">
+                <img src="https://dintt.github.io/mutucar-assets/Mutualidad%20Pixelada.png" width="600" alt="La mutualidad pixelada" style="width:100%;max-width:600px;height:auto;display:block;margin: 0 auto;">
+            </div>
+            <div style="padding: 0 40px 32px; text-align: center;">
+                <p style="margin:0 0 12px;font-family: 'Open Sans', Arial, sans-serif;font-size:12px;line-height:16px;font-weight:600;color:#555555;letter-spacing:1px;">TU CAMINO EN EL APRENDIZAJE</p>
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin: 0 auto;">
+                    <tbody>
+                        <tr>
+                            <td width="25%" align="center" style="padding:0 4px;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tbody><tr><td height="8" style="background-color:#7dbb67;border-radius:4px;font-size:0;line-height:0;">&nbsp;</td></tr></tbody></table>
+                                <p style="margin:10px 0 0;font-family: 'Open Sans', Arial, sans-serif;font-size:12px;line-height:16px;font-weight:600;color:#7dbb67;">Etapa 1 - Lista</p>
+                            </td>
+                            <td width="25%" align="center" style="padding:0 4px;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tbody><tr><td height="8" style="background-color:#2E4D23;border-radius:4px;font-size:0;line-height:0;">&nbsp;</td></tr></tbody></table>
+                                <p style="margin:10px 0 0;font-family: 'Open Sans', Arial, sans-serif;font-size:12px;line-height:16px;font-weight:600;color:#2E4D23;">Etapa 2 - En curso</p>
+                            </td>
+                            <td width="25%" align="center" style="padding:0 4px;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tbody><tr><td height="8" style="background-color:#c7d9df;border-radius:4px;font-size:0;line-height:0;">&nbsp;</td></tr></tbody></table>
+                                <p style="margin:10px 0 0;font-family: 'Open Sans', Arial, sans-serif;font-size:12px;line-height:16px;color:#4f6b78;">Etapa 3</p>
+                            </td>
+                            <td width="25%" align="center" style="padding:0 4px;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tbody><tr><td height="8" style="background-color:#c7d9df;border-radius:4px;font-size:0;line-height:0;">&nbsp;</td></tr></tbody></table>
+                                <p style="margin:10px 0 0;font-family: 'Open Sans', Arial, sans-serif;font-size:12px;line-height:16px;color:#4f6b78;">Etapa 4</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            <h3 style="margin-top: 20px;">TU MISIÓN DE HOY: EL ESCENARIO</h3>
+            <p>Durante esta misión te enfrentarás a 3 simulaciones de llamadas telefónicas o mensajes directos.</p>
+            <p>A diferencia del Phishing tradicional, aquí el atacante intentará jugar con tus emociones en tiempo real. Puede usar un tono autoritario haciéndose pasar por un jefe, generar pánico fingiendo ser tu banco, o pedir ayuda urgente simulando ser un familiar.</p>
+            <p>Las situaciones se seleccionan al azar. Tu objetivo no es complacer a quien llama ni actuar rápido para resolver el supuesto "problema".</p>
+            <hr>
+            <h3 style="margin-top: 20px;">LA REGLA DE ORO</h3>
+            <div class="instruction-box" style="text-align: center; font-style: normal; font-weight: bold;">
+                CUESTIONA ➔ VERIFICA ➔ CUELGA Y REPORTA
+            </div>
+            <p>Si una voz al otro lado de la línea te pide contraseñas, códigos de verificación, transferencias de dinero o descargar programas, detente. Ninguna institución legítima te exigirá esto por teléfono.</p>
+            <p><strong>Recuerda:</strong> La urgencia es el arma principal del estafador. Quien te presiona para actuar rápido, generalmente te está mintiendo.</p>
+            
+            <hr style="border: 0; border-top: 1px solid var(--color-border); margin: 20px 0;">
+            
+            <h3 style="margin-top: 15px;">INSTRUCCIONES DEL JUEGO</h3>
+            <div style="margin-top: 15px;" class="instruction-box">
+                1. Lee cuidadosamente la transcripción de la llamada o mensaje en pantalla.<br>
+                2. Observa quién es el interlocutor y qué emoción intenta provocar en ti.<br>
+                3. Detecta la "trampa" (¿qué información confidencial o acción te está pidiendo?).<br>
+                4. Selecciona la respuesta que proteja mejor tu seguridad y la de la Mutualidad.<br>
+                5. Supera los 3 escenarios para desbloquear tu segunda Estampa de Honor.
+            </div>
+            <p><strong>Mantén la mente fría.</strong> Un verdadero Guardián no cede ante la presión.</p>
+            <button type="button" class="btn-action" onclick="unlockGame()">ACCEDER A LA MISIÓN 2</button>
+        </div>
+    </div>
+    </div>
+
+    <!-- MODAL DE INSTRUCCIONES INICIALES -->
+    <div class="modal-overlay" id="instructions-modal">
+        <div class="modal-content">
+            <!-- Paso 1 -->
+            <div class="modal-step active" id="step-0">
+                <h3>🎯 El Objetivo</h3>
+                <p>En esta misión te enfrentarás a la <strong>Ingeniería Social</strong>. Un atacante intentará manipularte usando el sentido de urgencia, la autoridad o el miedo.</p>
+                <p>Tu meta es mantener la calma, analizar la situación y no ceder ante la presión psicológica.</p>
+            </div>
+            <!-- Paso 2 -->
+            <div class="modal-step" id="step-1">
+                <h3>🛡️ Regla de Oro: Vishing</h3>
+                <p>El "Vishing" es el phishing por voz. Recuerda que ninguna institución financiera, área de TI o autoridad real te pedirá códigos de verificación o claves por teléfono.</p>
+                <div class="instruction-box" style="text-align: center; font-style: normal; font-weight: bold;">
+                    CUESTIONA ➔ VERIFICA ➔ CUELGA
+                </div>
+                <p>Ante la duda: cuelga y llama tú mismo al número oficial de la entidad.</p>
+            </div>
+            <!-- Paso 3 -->
+            <div class="modal-step" id="step-2">
+                <h3>🚀 Acción Final</h3>
+                <p>Entra al simulador, analiza la llamada y toma la decisión que proteja tu información y la de la Mutualidad.</p>
+                <p>Al finalizar, registra tu logro para obtener la segunda Estampa de Honor.</p>
+            </div>
+
+            <div class="modal-progress-container">
+                <div class="modal-progress-dot" id="dot-0"></div>
+                <div class="modal-progress-dot" id="dot-1"></div>
+                <div class="modal-progress-dot" id="dot-2"></div>
+            </div>
+            <div class="modal-nav">
+                <button class="btn-modal btn-back hidden" id="btn-prev" onclick="prevStep()">← Atrás</button>
+                <button class="btn-modal btn-next" id="btn-next" onclick="nextStep()">Continuar →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 2: EL JUEGO (DESAFÍO) -->
+    <div class="game-wrapper" id="game-wrapper">
+        <div class="game-container" id="game-section">
+            <div id="game-view">
+                <!-- Encabezado verde (Fijo) -->
+                <div class="slide-header">
+                    <h2 id="header-title">🕵️ Pregunta 1 de 3</h2>
+                    <p>Etapa 2: El Guardián de las Llaves</p>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar"><div class="progress-fill" id="game-progress"></div></div>
+                </div>
+                
+                <!-- Cuerpo de la tarjeta (Dinámico) -->
+                <div class="game-area">
+                    <div class="mission-card">
+                        <h3 id="mission-title" style="margin: 0 0 15px 0; color: var(--color-text-primary); font-size: 18px; text-align: center;">Cargando desafío...</h3>
+                        
+                        <div class="email-simulator" id="email-sim">
+                            <!-- Dinámico -->
+                        </div>
+                        
+                        <p class="step-question" id="step-question">Cargando pregunta...</p>
+                        <div class="options-grid" id="options">
+                            <!-- Dinámico -->
+                        </div>
+                        <p id="feedback"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="reward-view" class="fade-in">
+                <h2 style="color: var(--color-brand); font-size: 28px; margin: 10px 0;">¡Misión Cumplida! 🏆</h2>
+                <p style="font-size: 16px; margin-bottom: 30px;">Has evitado con éxito los ataques de ingeniería social. Tu capacidad de mantener la calma ha protegido la institución.</p>
+
+                <!-- Encabezado de victoria -->
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="https://dintt.github.io/mutucar-assets/Carabinero%20Premiado.PNG" alt="Misión Cumplida" style="width:100%; max-width:400px; height:auto; display:block; margin: 0 auto;">
+                </div>
+
+                <!-- Zona de la Estampa y Descarga (Ajustado para Estampa 2) -->
+                <div style="background: white; border: 2px dashed var(--color-border-mid); border-radius: 15px; padding: 15px; margin-bottom: 30px;">
+                    <button type="button" onclick="downloadStamp()" class="btn-action" style="width: auto; padding: 12px 30px; background: var(--color-border-mid); font-size: 14px;">⬇️ DESCARGAR ESTAMPA</button>
+                </div>
+
+                <!-- Zona del Formulario y Siguiente Etapa -->
+                <div style="background: var(--color-brand-light); padding: 25px; border-radius: 12px; border: 1px solid var(--color-brand-mid);">
+                    <p style="margin: 0; font-weight: bold; color: var(--color-brand); font-size: 16px;">PASO FINAL: REGISTRO OFICIAL</p>
+                    <p style="margin: 8px 0 20px; font-size: 14px;">Para validar tu logro en el tablero de monitoreo, completa el registro oficial:</p>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <a href="https://forms.cloud.microsoft/r/M5Fhx3he8s" target="_blank" class="btn-register" style="margin: 0; width: 100%; max-width: 300px;">📋 REGISTRAR MI LOGRO</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL DE ACIERTO -->
+        <div class="success-panel" id="success-panel">
+            <div class="robot-placeholder" id="robot-placeholder">🤖</div>
+            <h3>¡Muy bien, Mutuguardián!</h3>
+            <p id="success-message">Has identificado correctamente la manipulación.</p>
+            <button class="btn-continue" onclick="continueAfterCorrect()">CONTINUAR →</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE APRENDIZAJE POR ERROR (FEEDBACK) -->
+    <div class="feedback-overlay" id="feedback-overlay"></div>
+    <div class="feedback-panel" id="feedback-panel">
+        <div class="feedback-icon">⚠️</div>
+        <h3>No era la opción más segura</h3>
+        <p id="feedback-intro"></p>
+
+        <div class="feedback-explanation">
+            <strong>¿Por qué?</strong>
+            <span id="feedback-explanation"></span>
+        </div>
+
+        <div class="feedback-lesson">
+            <strong>💡 Recuerda</strong>
+            <span id="feedback-lesson"></span>
+        </div>
+
+        <button class="btn-feedback" onclick="closeIncorrectFeedback()">ENTENDIDO, VOLVER A INTENTAR</button>
+    </div>
+
+    <script>
+        // --- LÓGICA DEL MODAL INICIAL DE INSTRUCCIONES ---
+        let currentStep = 0;
+        const totalSteps = 3;
+
+        function openModal() {
+            currentStep = 0;
+            updateModal();
+            document.getElementById('instructions-modal').style.display = 'flex';
+        }
+
+        function updateModal() {
+            document.querySelectorAll('.modal-step').forEach((step, index) => {
+                step.classList.toggle('active', index === currentStep);
+            });
+
+            document.querySelectorAll('.modal-progress-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentStep);
+            });
+
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+
+            btnPrev.classList.toggle('hidden', currentStep === 0);
+
+            if (currentStep === totalSteps - 1) {
+                btnNext.innerText = "INICIAR MISIÓN";
+                btnNext.style.background = "var(--color-success)";
+            } else {
+                btnNext.innerText = "Continuar →";
+                btnNext.style.background = "var(--color-brand)";
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps - 1) {
+                currentStep++;
+                updateModal();
+            } else {
+                unlockGame();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                updateModal();
+            }
+        }
+
+        function unlockGame() {
+            document.getElementById('instructions-modal').style.display = 'none';
+            document.getElementById('email-section').style.display = 'none';
+            document.getElementById('game-section').style.display = 'block';
+            initGame();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+
+        // --- LÓGICA DEL JUEGO (FLUJO Y DESCARGA) ---
+        let currentQuestionIndex = 0;
+        let missionQuestions = [];
+        let answerLocked = false;
+
+        function downloadStamp() {
+            // Nota: Verifica que el nombre del archivo en tu GitHub corresponda con este URL.
+            const imageUrl = 'https://dintt.github.io/mutucar-assets/Estampa2.jpg';
+            const fileName = 'Estampa-Honor-Mutucar-2.jpg';
+
+            fetch(imageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const blobUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(blobUrl);
+                })
+                .catch(error => {
+                    window.open(imageUrl, '_blank');
+                });
+        }
+
+        function showIncorrectFeedback(q) {
+            document.getElementById('feedback-intro').innerText =
+                'La respuesta seleccionada no era la acción más segura en esta situación.';
+
+            document.getElementById('feedback-explanation').innerText = q.explanation;
+            document.getElementById('feedback-lesson').innerText = q.lesson;
+
+            document.getElementById('feedback-overlay').classList.add('active');
+            document.getElementById('feedback-panel').classList.add('active');
+        }
+
+        function closeIncorrectFeedback() {
+            document.getElementById('feedback-overlay').classList.remove('active');
+            document.getElementById('feedback-panel').classList.remove('active');
+            answerLocked = false;
+        }
+
+        function showCorrectFeedback(q) {
+            document.getElementById('success-message').innerText = q.feedbackCorrect;
+            document.getElementById('success-panel').classList.add('active');
+        }
+
+        function continueAfterCorrect() {
+            document.getElementById('success-panel').classList.remove('active');
+
+            currentQuestionIndex++;
+            answerLocked = false;
+
+            if (currentQuestionIndex < missionQuestions.length) {
+                renderQuestion();
+            } else {
+                document.getElementById('game-progress').style.width = '100%';
+                document.getElementById('game-view').classList.add('hidden');
+                document.getElementById('reward-view').style.display = 'block';
+            }
+        }
+
+        // --- LÓGICA DEL JUEGO DINÁMICO (PREGUNTAS ENRIQUECIDAS PARA ETAPA 2) ---
+        const questionPool = [
+            {
+                title: "El Desafío: La Llamada Sospechosa",
+                email: "<b>Canal:</b> Llamada Telefónica (Vishing)<br><b>Interlocutor:</b> Supuesto Ejecutivo Bancario<hr>Hola, hablo del Banco. Detectamos un cargo sospechoso de $500.000. Para anularlo ahora mismo y evitar que el dinero salga de su cuenta, necesito que me dicte el código de 6 dígitos que acaba de llegar a su celular.",
+                question: "El sentido de urgencia es alto. ¿Qué haces?",
+                options: [
+                    { text: "Dar el código rápidamente para evitar que me roben el dinero.", correct: false },
+                    { text: "Colgar inmediatamente y llamar yo mismo al número oficial del banco.", correct: true },
+                    { text: "Pedirle que me diga mi dirección para confirmar que es el banco.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Correcto! Jamás debes entregar códigos de verificación por teléfono. El banco nunca los pide.",
+                explanation: "El atacante genera un falso sentido de urgencia alarmándote sobre un cargo. Su objetivo es que le entregues el código de seguridad, el cual utilizará para autorizar una transacción real o tomar control de tu cuenta.",
+                lesson: "Nunca entregues códigos de verificación por teléfono, incluso si la persona afirma ser de tu banco y la situación parece urgente.",
+                feedbackIncorrect: "❌ Incorrecto. Los bancos nunca piden códigos de seguridad por teléfono. ¡Cuidado!"
+            },
+            {
+                title: "El Desafío: El Falso Técnico",
+                email: "<b>Canal:</b> Llamada Telefónica (Vishing)<br><b>Interlocutor:</b> Soporte Técnico Microsoft<hr>Hola, hemos detectado un virus en su computadora que está afectando la red de la Mutualidad. Necesito que descargue una herramienta de acceso remoto para limpiarlo ahora mismo.",
+                question: "¿Es seguro permitir el acceso remoto a alguien que te llamó sin previo aviso?",
+                options: [
+                    { text: "Sí, si dice ser de Microsoft y parece profesional.", correct: false },
+                    { text: "No, colgar y reportar el incidente al área de Seguridad de la Información.", correct: true },
+                    { text: "Solo si me envía un correo primero.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Correcto! Nunca permitas acceso remoto a desconocidos que te contacten proactivamente.",
+                explanation: "Los atacantes suplantan a soporte técnico para que instales software de acceso remoto. Una vez que lo haces, tienen control total de tu equipo y pueden robar información de la Mutualidad.",
+                lesson: "Nunca instales programas ni des acceso remoto a tu equipo por instrucciones de una llamada inesperada. Reporta el incidente internamente.",
+                feedbackIncorrect: "❌ Incorrecto. El acceso remoto es la forma más rápida de comprometer tu equipo."
+            },
+            {
+                title: "El Desafío: El Urgente Familiar",
+                email: "<b>Canal:</b> Mensaje de WhatsApp / Llamada<br><b>Interlocutor:</b> Un familiar (suplantado)<hr>Hola, tuve un problema con mi teléfono y estoy usando este número. Necesito que me transfieras dinero urgentemente para un trámite, te lo devuelvo mañana.",
+                question: "El mensaje parece real pero el número es desconocido. ¿Cómo procedes?",
+                options: [
+                    { text: "Transferir el dinero rápido porque es un familiar.", correct: false },
+                    { text: "Llamar al número original del familiar para confirmar la situación.", correct: true },
+                    { text: "Pedirle que me mande una foto para comprobar que es él.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Muy bien! Verificar la identidad por un canal conocido es fundamental.",
+                explanation: "Los ciberdelincuentes suelen robar o clonar cuentas de WhatsApp para pedir dinero a los contactos de la víctima, aprovechándose de la confianza y la urgencia emocional.",
+                lesson: "Si un conocido te pide dinero desde un número nuevo o con una historia inusual, verifícalo siempre llamándolo a su número original o mediante otro canal seguro.",
+                feedbackIncorrect: "❌ Incorrecto. Las suplantaciones de identidad familiar pidiendo dinero son muy comunes hoy en día."
+            },
+            {
+                title: "El Desafío: La Encuesta Premiada",
+                email: "<b>Canal:</b> Llamada Telefónica<br><b>Interlocutor:</b> Agencia de Marketing<hr>¡Felicidades! Ha sido seleccionado para ganar un premio increíble. Solo necesitamos confirmar algunos datos personales y su RUT para procesar el envío.",
+                question: "Te ofrecen un premio a cambio de datos personales. ¿Cuál es la respuesta correcta?",
+                options: [
+                    { text: "Dar los datos rápidamente para ganar el premio.", correct: false },
+                    { text: "Colgar la llamada inmediatamente.", correct: true },
+                    { text: "Dar solo el RUT pero no los datos personales.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Correcto! Ningún premio real requiere que des tus datos por teléfono de forma imprevista.",
+                explanation: "Los falsos premios son ganchos emocionales diseñados para obtener tus datos personales (RUT, nombre, cuentas bancarias), los cuales luego se utilizan para fraudes o robo de identidad.",
+                lesson: "Desconfía de premios inesperados, especialmente si te piden información personal o pagos previos para 'liberarlos'.",
+                feedbackIncorrect: "❌ Incorrecto. Entregar datos personales a un desconocido es el primer paso para un robo de identidad."
+            },
+            {
+                title: "El Desafío: El Jefe Impaciente",
+                email: "<b>Canal:</b> Llamada Telefónica<br><b>Interlocutor:</b> Supuesto Jefe de Área<hr>Hola, soy el jefe. Estoy en una reunión muy importante y necesito que me compres unas tarjetas de regalo de Amazon ahora mismo. Te reembolso el gasto al final del día.",
+                question: "El tono es autoritario y urgente. ¿Qué haces?",
+                options: [
+                    { text: "Comprar las tarjetas inmediatamente para no molestar al jefe.", correct: false },
+                    { text: "Cuestionar la solicitud y contactar al jefe por el canal oficial.", correct: true },
+                    { text: "Pedirle que me diga la clave de la oficina para confirmar.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Correcto! Las solicitudes de tarjetas de regalo urgentes son una señal clara de estafa.",
+                explanation: "Esta táctica, conocida como 'Fraude del CEO', usa la autoridad de un superior y la presión para que compres tarjetas de regalo, las cuales son imposibles de rastrear y equivalen a enviar dinero en efectivo al estafador.",
+                lesson: "Si recibes una orden urgente o inusual de un superior (especialmente involucrando dinero o tarjetas), confirma directamente con esa persona por otro canal.",
+                feedbackIncorrect: "❌ Incorrecto. No cedas ante la presión de la autoridad sin verificar la solicitud de forma independiente."
+            },
+            {
+                title: "El Desafío: El Aviso de Seguridad",
+                email: "<b>Canal:</b> Llamada Telefónica<br><b>Interlocutor:</b> Departamento de Seguridad Bancaria<hr>Hola, detectamos un intento de retiro en un cajero automático en otra ciudad. Para bloquear la cuenta, necesito que me confirme su clave secreta.",
+                question: "¿Algún banco solicita la clave secreta por teléfono para bloquear una cuenta?",
+                options: [
+                    { text: "Sí, si la situación es urgente y hay fraude.", correct: false },
+                    { text: "Solo si el operador tiene mi nombre completo.", correct: false },
+                    { text: "No, nunca. La clave es secreta y personal.", correct: true }
+                ],
+                feedbackCorrect: "✅ ¡Exacto! Tu clave secreta no debe ser revelada a nadie, ni siquiera al banco.",
+                explanation: "Ningún banco necesita tu clave secreta para bloquear una cuenta de emergencia. El atacante busca engañarte para obtener la clave y acceder directamente a tus fondos.",
+                lesson: "Tu clave secreta, pines y contraseñas son estrictamente confidenciales. Ninguna entidad legítima te pedirá que se las dictes.",
+                feedbackIncorrect: "❌ Incorrecto. El banco ya tiene control sobre tu cuenta; no necesita que le digas tu contraseña."
+            },
+            {
+                title: "El Desafío: La Llamada de Soporte",
+                email: "<b>Canal:</b> Llamada Telefónica<br><b>Interlocutor:</b> Soporte de Software<hr>Hola, estamos haciendo un mantenimiento preventivo en su software de gestión. Necesito que me dicte la contraseña de administrador para optimizar la base de datos.",
+                question: "Un técnico te pide la contraseña de administrador. ¿Cuál es la acción correcta?",
+                options: [
+                    { text: "Dar la contraseña para que el software funcione mejor.", correct: false },
+                    { text: "Negar la información y reportar la llamada a TI.", correct: true },
+                    { text: "Darle una contraseña falsa para ver qué hace.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Correcto! El soporte técnico legítimo no necesita tu contraseña personal.",
+                explanation: "Las contraseñas de administrador dan acceso a sistemas críticos y bases de datos sensibles. Un falso técnico intentará obtenerla para vulnerar la seguridad de toda la organización.",
+                lesson: "Las credenciales son personales e intransferibles. El equipo de TI real nunca necesita tus contraseñas para hacer un mantenimiento.",
+                feedbackIncorrect: "❌ Incorrecto. Nunca compartas credenciales, mucho menos contraseñas con privilegios de administrador."
+            },
+            {
+                title: "El Desafío: El Premio Inesperado",
+                email: "<b>Canal:</b> Llamada Telefónica<br><b>Interlocutor:</b> Lotería Nacional<hr>¡Ha ganado un premio millonario! Para liberar los fondos, solo debe realizar un pequeño pago de impuestos mediante una transferencia rápida.",
+                question: "Te piden dinero para recibir un premio. ¿Qué significa esto?",
+                options: [
+                    { text: "Que el premio es real y los impuestos son normales.", correct: false },
+                    { text: "Que es una estafa clásica de 'pago por adelantado'.", correct: true },
+                    { text: "Que debo transferir el dinero solo si me mandan el contrato.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Correcto! Nunca pagues dinero para recibir un premio.",
+                explanation: "Este es el clásico fraude de 'pago por adelantado'. Te prometen un premio enorme, pero te exigen transferir un monto más pequeño primero, el cual robarán y desaparecerán para siempre.",
+                lesson: "Si tienes que pagar para recibir un premio, es una estafa garantizada. No transfieras dinero bajo ninguna circunstancia.",
+                feedbackIncorrect: "❌ Incorrecto. Los premios reales nunca piden transferencias previas para gastos o impuestos."
+            },
+            {
+                title: "El Desafío: El Gestor de Seguros",
+                email: "<b>Canal:</b> Llamada Telefónica<br><b>Interlocutor:</b> Agencia de Seguros<hr>Hola, estamos actualizando su póliza de vida. Necesitamos validar su RUT y los datos de su cuenta bancaria para el reembolso de la prima.",
+                question: "Te piden datos bancarios por teléfono para un reembolso. ¿Qué haces?",
+                options: [
+                    { text: "Dar los datos para recuperar el dinero.", correct: false },
+                    { text: "Colgar y llamar a la aseguradora a través de su número oficial.", correct: true },
+                    { text: "Dar solo el RUT y esperar a que me llamen luego.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Correcto! La verificación por un canal oficial es la única forma segura.",
+                explanation: "Bajo la excusa de un reembolso económico a tu favor, el estafador busca recopilar tus datos bancarios y personales para vulnerar tus finanzas posteriormente.",
+                lesson: "Cuelga la llamada y comunícate tú mismo a los números oficiales de la aseguradora o entidad para verificar si existe algún trámite pendiente.",
+                feedbackIncorrect: "❌ Incorrecto. Entregar datos bancarios por teléfono a un interlocutor desconocido es un riesgo crítico."
+            },
+            {
+                title: "El Desafío: El Aviso de la Mutualidad",
+                email: "<b>Canal:</b> Llamada Telefónica<br><b>Interlocutor:</b> Supuesta Oficina de la Mutualidad<hr>Hola, llamamos de la Mutualidad para informarle que tiene un beneficio pendiente. Necesitamos que nos confirme su clave de acceso al portal para activarlo.",
+                question: "¿Es normal que la Mutualidad pida la clave del portal por teléfono?",
+                options: [
+                    { text: "Sí, si es para activar un beneficio.", correct: false },
+                    { text: "Solo si el operador conoce mi cargo.", correct: false },
+                    { text: "No, nunca. La Mutualidad jamás pedirá claves por teléfono.", correct: true }
+                ],
+                feedbackCorrect: "✅ ¡Correcto! Ninguna entidad oficial pedirá tus claves de acceso por teléfono.",
+                explanation: "Un atacante se hace pasar por un colega o empleado interno de la institución para que bajes la guardia y entregues tus credenciales corporativas.",
+                lesson: "Las contraseñas corporativas nunca deben compartirse por ningún medio telefónico ni digital. Nadie en la Mutualidad te solicitará jamás tus claves.",
+                feedbackIncorrect: "❌ Incorrecto. Tu clave de acceso es estrictamente confidencial y nunca debe ser compartida."
+            }
+        ];
+
+        function initGame() {
+            // Barajar y seleccionar 3 preguntas aleatorias
+            const shuffled = [...questionPool].sort(() => 0.5 - Math.random());
+            missionQuestions = shuffled.slice(0, 3);
+            currentQuestionIndex = 0;
+            answerLocked = false;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = missionQuestions[currentQuestionIndex];
+            
+            // Actualiza el contador de preguntas en la franja verde
+            document.getElementById('header-title').innerText = `🕵️ Pregunta ${currentQuestionIndex + 1} de 3`;
+            
+            // Actualiza el nombre del desafío adentro de la tarjeta
+            document.getElementById('mission-title').innerText = q.title;
+            
+            // Actualiza el contenido del correo y la pregunta
+            document.getElementById('email-sim').innerHTML = q.email;
+            document.getElementById('step-question').innerText = q.question;
+
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt.text;
+                btn.onclick = () => checkAnswer(opt.correct, btn);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('feedback').innerText = '';
+            document.getElementById('feedback').style.backgroundColor = 'transparent';
+            document.getElementById('feedback').style.border = 'none';
+
+            updateProgressBar();
+        }
+
+        function updateProgressBar() {
+            const fill = document.getElementById('game-progress');
+            const percentage = (currentQuestionIndex / missionQuestions.length) * 100;
+            fill.style.width = percentage + '%';
+        }
+
+        function checkAnswer(isCorrect, btn) {
+            if (answerLocked) return;
+
+            const feedback = document.getElementById('feedback');
+            const buttons = document.querySelectorAll('.option-btn');
+            const q = missionQuestions[currentQuestionIndex];
+
+            if (isCorrect) {
+                answerLocked = true;
+                btn.classList.add('correct');
+                buttons.forEach(b => b.style.pointerEvents = 'none');
+
+                feedback.innerText = "¡Respuesta correcta!";
+                feedback.style.color = "var(--color-success-text)";
+                feedback.style.backgroundColor = "var(--color-success-bg)";
+                feedback.style.border = "1px solid var(--color-success-border)";
+
+                showCorrectFeedback(q);
+            } else {
+                btn.classList.add('incorrect');
+                feedback.innerText = "Revisa tu decisión y analiza la explicación.";
+                feedback.style.color = "var(--color-error-text)";
+                feedback.style.backgroundColor = "var(--color-error-bg)";
+                feedback.style.border = "1px solid var(--color-error-border)";
+
+                showIncorrectFeedback(q);
+
+                setTimeout(() => {
+                    btn.classList.remove('incorrect');
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>

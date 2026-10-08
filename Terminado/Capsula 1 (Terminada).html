@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUTUCAR | Etapa 1: El Aprendiz Silencioso</title>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Open+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-brand:           #2E4D23;
+            --color-brand-hover:     #1E3316;
+            --color-brand-light:     #E8EFDF;
+            --color-brand-mid:       #BDC7B1;
+            --color-brand-text:      #C7D9DF;
+            --color-bg:              #F1EDE4;
+            --color-surface:         #FFFFFF;
+            --color-border:          #C7D9DF;
+            --color-border-mid:      #75A5BD;
+            --color-text-primary:    #292648;
+            --color-text-body:       #555555;
+            --color-text-muted:      #4F6B78;
+            --color-success:         #26443C;
+            --color-success-bg:      #D5EFD8;
+            --color-success-border:  #91D2C2;
+            --color-success-text:    #26443C;
+            --color-error:           #872F3E;
+            --color-error-bg:        #FBEAE8;
+            --color-error-border:    #F6A08F;
+            --color-error-text:      #562F35;
+            --color-warning:         #B8860B;
+            --color-warning-bg:      #FEFAD9;
+            --color-warning-border:  #DFB67C;
+            --color-warning-text:    #5A3D14;
+            --header-from:           #292648;
+            --header-to:             #2E4D23;
+            --shadow-card:  0 1px 3px 0 rgba(0,0,0,0.08), 0 1px 2px -1px rgba(0,0,0,0.06);
+            --shadow-brand: 0 4px 12px rgba(46, 77, 35, 0.25);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--color-bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: var(--color-text-body);
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, .brand-font { font-family: 'Chakra Petch', sans-serif; }
+
+        .email-container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid var(--color-border);
+            overflow: hidden;
+            margin-bottom: 60px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .email-meta {
+            background: #f9f9f9;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            color: #666;
+        }
+        .email-meta div { margin-bottom: 5px; }
+        .email-meta strong { color: var(--color-text-primary); }
+
+        .email-header {
+            background: linear-gradient(135deg, var(--header-from), var(--header-to));
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .email-header h2 { margin: 0; font-size: 24px; text-transform: uppercase; }
+
+        .email-body { padding: 30px; line-height: 1.7; text-align: center; }
+        .email-body h3 { color: var(--color-text-primary); margin-top: 0; }
+
+        .instruction-box {
+            background: var(--color-bg);
+            border-left: 4px solid var(--color-brand);
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            font-style: italic;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 260px;
+            margin: 10px auto;
+            padding: 15px 30px;
+            background: var(--color-brand);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-family: 'Chakra Petch', sans-serif;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            box-shadow: var(--shadow-brand);
+        }
+        .btn-action:hover { background: var(--color-brand-hover); transform: scale(1.05); }
+
+        /* FEEDBACK EDUCATIVO */
+        .feedback-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 520px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            border: 2px solid var(--color-error);
+            z-index: 1000;
+            text-align: center;
+            animation: modalSlideUp 0.35s ease;
+        }
+
+        .feedback-panel.active { display: block; }
+
+        .feedback-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.72);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+        }
+
+        .feedback-overlay.active { display: block; }
+
+        .feedback-icon {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .feedback-panel h3 {
+            font-family: 'Chakra Petch', sans-serif;
+            color: var(--color-error);
+            margin: 0 0 15px;
+            text-transform: uppercase;
+        }
+
+        .feedback-panel p {
+            line-height: 1.6;
+            color: var(--color-text-body);
+            margin: 10px 0;
+        }
+
+        .feedback-explanation {
+            background: var(--color-error-bg);
+            border: 1px solid var(--color-error-border);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .feedback-explanation strong {
+            display: block;
+            color: var(--color-error-text);
+            margin-bottom: 6px;
+        }
+
+        .feedback-lesson {
+            background: var(--color-warning-bg);
+            border: 1px solid var(--color-warning-border);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0 20px;
+            text-align: left;
+        }
+
+        .feedback-lesson strong {
+            display: block;
+            color: var(--color-warning-text);
+            margin-bottom: 6px;
+        }
+
+        .btn-feedback {
+            width: 100%;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 50px;
+            background: var(--color-brand);
+            color: white;
+            font-family: 'Chakra Petch', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: var(--shadow-brand);
+            transition: all 0.2s;
+        }
+
+        .btn-feedback:hover {
+            background: var(--color-brand-hover);
+            transform: scale(1.02);
+        }
+
+        /* PANEL DE ACIERTO */
+        .success-panel {
+            display: none;
+            position: absolute;
+            left: calc(100% + 20px);
+            top: 0;
+            width: 280px;
+            background: white;
+            border: 2px solid var(--color-success-border);
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            text-align: center;
+            animation: fadeIn 0.35s ease;
+        }
+
+        .success-panel.active { display: block; }
+
+        .success-panel h3 {
+            margin: 8px 0 10px;
+            color: var(--color-success-text);
+            font-family: 'Chakra Petch', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .success-panel p {
+            font-size: 14px;
+            line-height: 1.55;
+            color: var(--color-text-body);
+        }
+
+        .robot-placeholder {
+            width: 95px;
+            height: 95px;
+            margin: 0 auto 10px;
+            border-radius: 50%;
+            background: var(--color-brand-light);
+            border: 2px solid var(--color-brand-mid);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .btn-continue {
+            width: 100%;
+            padding: 12px 18px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 50px;
+            background: var(--color-brand);
+            color: white;
+            font-family: 'Chakra Petch', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: var(--shadow-brand);
+        }
+
+        .btn-continue:hover {
+            background: var(--color-brand-hover);
+            transform: scale(1.02);
+        }
+
+        .game-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        @media (max-width: 1050px) {
+            .success-panel {
+                position: static;
+                width: 100%;
+                margin-top: 20px;
+            }
+        }
+
+        @keyframes modalSlideUp {
+            from { opacity: 0; transform: translate(-50%, calc(-50% + 30px)); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        .game-container {
+            max-width: 600px;
+            width: 100%;
+            background: var(--color-surface);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+            display: none;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .slide-header {
+            background: linear-gradient(to right, var(--header-from), var(--header-to));
+            padding: 25px;
+            color: white;
+            text-align: center;
+        }
+        .slide-header h2 { margin: 0; font-size: 24px; text-transform: uppercase; }
+        .slide-header p { margin: 5px 0 0; opacity: 0.9; font-size: 14px; }
+
+        .progress-container { padding: 20px 30px 0; }
+        .progress-bar {
+            background-color: var(--color-border);
+            border-radius: 9999px;
+            height: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background-color: var(--color-brand);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .game-area { padding: 30px; text-align: center; }
+        .mission-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-card);
+            text-align: left;
+        }
+        .mission-card h3 { margin: 0 0 15px 0; color: var(--color-text-primary); font-size: 18px; text-align: center; }
+
+        .email-simulator {
+            background: #fdfdfd;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 14px;
+            color: #444;
+        }
+        .email-simulator hr { border: 0; border-top: 1px solid #ddd; margin: 10px 0; }
+
+        .step-question {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--color-text-primary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .options-grid { display: grid; gap: 12px; }
+        .option-btn {
+            padding: 16px;
+            background: white;
+            border: 2px solid var(--color-border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 15px;
+            text-align: left;
+            color: #444;
+            font-weight: 500;
+        }
+        .option-btn:hover { border-color: var(--color-brand); background: #f8faff; }
+        .option-btn.correct { background: var(--color-success-bg) !important; border-color: var(--color-success-border) !important; color: var(--color-success-text); font-weight: bold; }
+        .option-btn.incorrect { background: var(--color-error-bg) !important; border-color: var(--color-error-border) !important; color: var(--color-error-text); }
+
+        #feedback { margin-top: 20px; font-weight: 600; min-height: 24px; font-size: 15px; text-align: center; padding: 10px; border-radius: 8px; transition: all 0.3s; }
+
+        #reward-view { display: none; padding: 40px 30px; text-align: center; }
+        .stamp-container {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 25px;
+            position: relative;
+        }
+        .stamp-img {
+            width: 50%;
+            height: 50%;
+            object-fit: contain;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
+            transform: rotate(-5deg);    
+        }
+        .btn-register {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 260px;
+            margin: 20px auto;
+            padding: 16px;
+            background: var(--color-brand);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-family: 'Chakra Petch', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-brand);
+        }
+        .btn-register:hover { transform: scale(1.05); background: var(--color-brand-hover); }
+
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+    </style>
+</head>
+<body id="top">
+
+    <!-- SECCIÓN 1: EL CORREO (BRIEFING) -->
+    <div class="email-container" id="email-section">
+        <div class="email-meta">
+            <div><strong>De:</strong> Comando de Ciberseguridad de Mutualidad &lt;seguridad@mutucar.cl&gt;</div>
+            <div><strong>Para:</strong> Guardián en Entrenamiento</div>
+            <div><strong>Asunto:</strong> Etapa 1 de 4: El Aprendiz Silencioso - Briefing Táctico</div>
+        </div>
+        <div class="email-header">
+            <h2>🛡️ TU MISIÓN DE HOY:</h2>
+        </div>
+            <div class="email-body">
+                <h3>¡Saludos, Mutuguardian!</h3>
+                    <p>Has sido seleccionado para comenzar la primera etapa de nuestro entrenamiento en Ciberseguridad para la Mutualidad.</p>
+                    <p>Tu primera mision se llama: <strong>"El aprendiz silencioso"</strong></p>
+                <h3>¿Cuál es el objetivo?</h3>
+                    <p>El objetivo de esta misión es aprender a reconocer las señales que permitan indicar cuando un correo electrónico es falso o peligroso.</p>
+                    <p>Los atacantes muchas veces intentan engañarnos utilizando mensajes que parecen reales. Pueden hacerse pasar por una persona, un área / departamento de la Mutualidad o incluso una empresa conocida.</p>
+                    <p>Su objetivo puede ser conseguir que hagamos clic en un enlace, abrir un archivo, entreguemos información o realicemos alguna acción que ponga en riesgo nuestra seguridad.</p>
+                    <p>A este tipo de engaño se le conoce como <strong>Phishing</strong>.</p>
+                    <p><strong>Tu misión será aprender a detenerte, analizar el mensaje y tomar la decisión más segura.</strong></p>
+            <div style="text-align: center;">
+                <img src="https://dintt.github.io/mutucar-assets/Mutualidad%20Pixelada.png" width="600" alt="La mutualidad pixelada" style="width:100%;max-width:600px;height:auto;display:block;margin: 0 auto;">
+            </div>
+            <div style="padding: 0 40px 32px; text-align: center; margin-top: 20px;">
+                <p style="margin:0 0 12px;font-family: 'Open Sans', Arial, sans-serif;font-size:12px;line-height:16px;font-weight:600;color:#555555;letter-spacing:1px;">TU CAMINO EN EL APRENDIZAJE</p>
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin: 0 auto;">
+                    <tbody>
+                        <tr>
+                            <td width="25%" align="center" style="padding:0 4px;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tbody><tr><td height="8" style="background-color:#2E4D23;border-radius:4px;font-size:0;line-height:0;">&nbsp;</td></tr></tbody></table>
+                                <p style="margin:10px 0 0;font-family: 'Open Sans', Arial, sans-serif;font-size:12px;line-height:16px;font-weight:600;color:#2E4D23;">Etapa 1</p>
+                            </td>
+                            <td width="25%" align="center" style="padding:0 4px;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tbody><tr><td height="8" style="background-color:#c7d9df;border-radius:4px;font-size:0;line-height:0;">&nbsp;</td></tr></tbody></table>
+                                <p style="margin:10px 0 0;font-family: 'Open Sans', Arial, sans-serif;font-size:12px;line-height:16px;color:#4f6b78;">Etapa 2</p>
+                            </td>
+                            <td width="25%" align="center" style="padding:0 4px;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tbody><tr><td height="8" style="background-color:#c7d9df;border-radius:4px;font-size:0;line-height:0;">&nbsp;</td></tr></tbody></table>
+                                <p style="margin:10px 0 0;font-family: 'Open Sans', Arial, sans-serif;font-size:12px;line-height:16px;color:#4f6b78;">Etapa 3</p>
+                            </td>
+                            <td width="25%" align="center" style="padding:0 4px;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tbody><tr><td height="8" style="background-color:#c7d9df;border-radius:4px;font-size:0;line-height:0;">&nbsp;</td></tr></tbody></table>
+                                <p style="margin:10px 0 0;font-family: 'Open Sans', Arial, sans-serif;font-size:12px;line-height:16px;color:#4f6b78;">Etapa 4</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div>
+                <h3 style="margin-top: 20px;">TU MISIÓN DE HOY: EL ESCENARIO</h3>
+                <p>Durante esta misión te enfrentarás a 3 situaciones diferentes de correo electrónico.</p>
+                <p>Cada situación representa un posible intento de engaño. El mensaje puede parecer legítimo, pero tendrá una o más señales que deberás analizar antes de tomar una decisión.</p>
+                <p>Las situaciones se seleccionan al azar, por lo que cada misión puede ser diferente.</p>
+                <p>Tu objetivo no es responder rápidamente. Tu objetivo es detenerte, analizar y elegir la acción más segura.</p>
+                <hr>
+                <h3 style="margin-top: 20px;">LA REGLA DE ORO</h3>
+                    <div class="instruction-box" style="text-align: center; font-style: normal; font-weight: bold;">DETENTE ➤ COMPRUEBA ➤ REPORTA </div>
+                    <p>Si un correo te pide información, te presiona para actuar rápidamente, incluye un enlace / archivo sospechoso, o parece provenir de alguien conocido, no actúes de inmediato.</p>
+                    <p>Primero detente. Después comprueba que el mensaje sea realmente legítimo. Si tienes dudas, repórtalo al área de Seguridad de la Información.</p>
+                <p><strong>Recuerda:</strong> Si un correo parece real, no significa que sea real.</p>
+                <hr>
+                <h3 style="margin-top: 15px;">INSTRUCCIONES DEL JUEGO</h3>
+                <div style="margin-top: 15px;" class="instruction-box">
+                    1. Lee cuidadosamente el correo que aparecerá en pantalla.<br>
+                    2. Observa quién lo envía y qué te está solicitando.<br>
+                    3. Busca cualquier señal que pueda indicar que se trata de un engaño.<br>
+                    4. Selecciona la opción que consideres más segura. <br>
+                    5. Completa las 3 situaciones para superar la misión.<br>
+                    6. Al finalizar, registra tu logro y obtén tu primera Estampa de Honor.
+                </div>
+                <p><strong>Recuerda:</strong> un solo clic erróneo puede abrir la puerta a todo un ejército de malware. Mantente alerta.</p>
+                <button type="button" class="btn-action" onclick="unlockGame()">ACCEDER A LA MISIÓN 1</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 2: EL JUEGO (DESAFÍO) -->
+    <div class="game-wrapper" id="game-wrapper">
+    <div class="game-container" id="game-section">
+        <div id="game-view">
+            <!-- Encabezado verde (Fijo) -->
+            <div class="slide-header">
+                <h2 id="header-title">🕵️ Pregunta 1 de 3</h2>
+                <p>Etapa 1: El Aprendiz Silencioso</p>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar"><div class="progress-fill" id="game-progress"></div></div>
+            </div>
+            
+            <!-- Cuerpo de la tarjeta (Dinámico) -->
+            <div class="game-area">
+                <div class="mission-card">
+                    <h3 id="mission-title" style="margin: 0 0 15px 0; color: var(--color-text-primary); font-size: 18px; text-align: center;">Cargando desafío...</h3>
+                    
+                    <div class="email-simulator" id="email-sim">
+                        <!-- Dinámico -->
+                    </div>
+                    
+                    <!-- AQUÍ ESTÁN LOS CONTENEDORES QUE FALTABAN -->
+                    <p class="step-question" id="step-question">Cargando pregunta...</p>
+                    <div class="options-grid" id="options">
+                        <!-- Dinámico -->
+                    </div>
+                    <p id="feedback"></p>
+                </div>
+            </div>
+        </div>
+        <div id="reward-view" class="fade-in">
+            <h2 style="color: var(--color-brand); font-size: 28px; margin: 10px 0;">¡Misión Cumplida! 🏆</h2>
+            <p style="font-size: 16px; margin-bottom: 30px;">Has demostrado instinto de Guardián. Tu primera Estampa de Honor ha sido desbloqueada.</p>
+
+            <!-- Encabezado de victoria -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img src="https://dintt.github.io/mutucar-assets/Carabinero%20Premiado.PNG" alt="Misión Cumplida" style="width:100%; max-width:400px; height:auto; display:block; margin: 0 auto;">
+            </div>
+
+            <!-- Zona de la Estampa y Descarga -->
+            <div style="background: white; border: 2px dashed var(--color-border-mid); border-radius: 15px; padding: 15px; margin-bottom: 30px;">
+                <button type="button" onclick="downloadStamp()" class="btn-action" style="width: auto; padding: 12px 30px; background: var(--color-border-mid); font-size: 14px;">⬇️ DESCARGAR ESTAMPA</button>
+            </div>
+
+            <!-- Zona del Formulario -->
+            <div style="background: var(--color-brand-light); padding: 25px; border-radius: 12px; border: 1px solid var(--color-brand-mid);">
+                <p style="margin: 0; font-weight: bold; color: var(--color-brand); font-size: 16px;">PASO FINAL: REGISTRO OFICIAL</p>
+                <p style="margin: 8px 0 20px; font-size: 14px;">Para validar tu logro en el tablero de monitoreo, es obligatorio completar el formulario.</p>
+                <a href="https://forms.cloud.microsoft/r/M5Fhx3he8s" target="_blank" class="btn-register" style="margin: 0; width: 100%; max-width: 300px;">📋 REGISTRAR MI LOGRO</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL DE ACIERTO -->
+    <div class="success-panel" id="success-panel">
+        <div class="robot-placeholder" id="robot-placeholder">🤖</div>
+        <h3>¡Muy bien, Mutuguardián!</h3>
+        <p id="success-message">Has identificado correctamente la señal de alerta.</p>
+        <button class="btn-continue" onclick="continueAfterCorrect()">CONTINUAR →</button>
+    </div>
+    </div>
+
+    <!-- MODAL DE APRENDIZAJE POR ERROR -->
+    <div class="feedback-overlay" id="feedback-overlay"></div>
+    <div class="feedback-panel" id="feedback-panel">
+        <div class="feedback-icon">⚠️</div>
+        <h3>No era la opción más segura</h3>
+        <p id="feedback-intro"></p>
+
+        <div class="feedback-explanation">
+            <strong>¿Por qué?</strong>
+            <span id="feedback-explanation"></span>
+        </div>
+
+        <div class="feedback-lesson">
+            <strong>💡 Recuerda</strong>
+            <span id="feedback-lesson"></span>
+        </div>
+
+        <button class="btn-feedback" onclick="closeIncorrectFeedback()">ENTENDIDO, VOLVER A INTENTAR</button>
+    </div>
+
+    <script>
+        // --- FLUJO DE LA MISIÓN ---
+        let currentQuestionIndex = 0;
+        let missionQuestions = [];
+        let answerLocked = false;
+
+        function trapClicked(event) {
+            event.preventDefault(); // Evita que el enlace recargue o mueva la página
+
+            // Reutilizamos tu panel de error (feedback) con un mensaje personalizado
+            document.getElementById('feedback-intro').innerText = 
+                '¡BOOM! 💥 Acabas de hacer clic en el enlace malicioso.';
+            
+            document.getElementById('feedback-explanation').innerText = 
+                'En un escenario real, hacer clic aquí podría haber descargado malware en tu equipo o haberte llevado a una página falsa diseñada para robar tus contraseñas.';
+            
+            document.getElementById('feedback-lesson').innerText = 
+                'Nunca hagas clic en los enlaces dudosos para comprobar a dónde llevan. Si el correo te genera sospechas, repórtalo inmediatamente sin interactuar con su contenido.';
+
+            // Mostramos el modal rojo
+            document.getElementById('feedback-overlay').classList.add('active');
+            document.getElementById('feedback-panel').classList.add('active');
+}
+        
+        function downloadStamp() {
+            const imageUrl = 'https://dintt.github.io/mutucar-assets/Estanpa1.jpg';
+            const fileName = 'Estampa-Honor-Mutucar-1.jpg';
+
+            // Intentamos forzar la descarga de forma silenciosa
+            fetch(imageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const blobUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(blobUrl);
+                })
+                .catch(error => {
+                    // Plan B: Si por políticas de red (CORS) falla el fetch, abre en nueva pestaña
+                    window.open(imageUrl, '_blank');
+                });
+        }
+
+        function unlockGame() {
+            const emailSection = document.getElementById('email-section');
+            const gameSection = document.getElementById('game-section');
+
+            if (!emailSection || !gameSection) {
+                console.error('No se encontraron las secciones principales del juego.');
+                return;
+            }
+
+            emailSection.style.display = 'none';
+            gameSection.style.display = 'block';
+
+            initGame();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showIncorrectFeedback(q) {
+            document.getElementById('feedback-intro').innerText =
+                'La respuesta seleccionada no era la acción más segura en esta situación.';
+
+            document.getElementById('feedback-explanation').innerText = q.explanation;
+            document.getElementById('feedback-lesson').innerText = q.lesson;
+
+            document.getElementById('feedback-overlay').classList.add('active');
+            document.getElementById('feedback-panel').classList.add('active');
+        }
+
+        function closeIncorrectFeedback() {
+            document.getElementById('feedback-overlay').classList.remove('active');
+            document.getElementById('feedback-panel').classList.remove('active');
+            answerLocked = false;
+        }
+
+        function showCorrectFeedback(q) {
+            document.getElementById('success-message').innerText = q.feedbackCorrect;
+            document.getElementById('success-panel').classList.add('active');
+        }
+
+        function continueAfterCorrect() {
+            document.getElementById('success-panel').classList.remove('active');
+
+            currentQuestionIndex++;
+            answerLocked = false;
+
+            if (currentQuestionIndex < missionQuestions.length) {
+                renderQuestion();
+            } else {
+                document.getElementById('game-progress').style.width = '100%';
+                document.getElementById('game-view').classList.add('hidden');
+                document.getElementById('reward-view').style.display = 'block';
+            }
+        }
+
+        // --- LÓGICA DEL JUEGO DINÁMICO ---
+        const questionPool = [
+            {
+                title: "El Desafío: La Forma Perfecta",
+                email: "<b>De:</b> Soporte TI &lt;soporte@rnutucar-ti.com&gt;<br><b>Asunto:</b> Revisión de tu cuenta institucional<hr>Hola, Guardián: detectamos un acceso inusual a tu cuenta. Si no lo reconoces, confirma tu contraseña en el siguiente enlace para que podamos bloquearlo y proteger tus datos.",
+                question: "No hay un solo error de forma. ¿Qué haces?",
+                options: [
+                    { text: "Hacer click en el enlace para resolver el problema rápido.", correct: false },
+                    { text: "No hacer click y reportar el correo al área de Seguridad de la Información.", correct: true },
+                    { text: "Responder al correo preguntando quién escribe.", correct: false }
+                ],
+                feedbackCorrect: "Has detectado una solicitud de credenciales y elegiste reportarla en lugar de interactuar con el enlace.",
+                explanation: "El mensaje intenta que entregues tu contraseña mediante un enlace. Aunque el correo parezca profesional, una solicitud de credenciales debe tratarse como una señal de alerta y verificarse por un canal oficial.",
+                lesson: "No ingreses credenciales desde enlaces recibidos por correo. Ante una solicitud sospechosa, detente, comprueba y reporta.",
+                feedbackIncorrect: "La acción seleccionada podía exponerte a un sitio fraudulento."
+            },
+            {
+                title: "El Desafío: El Remitente Sospechoso",
+                email: "<b>De:</b> Administrador de Seguridad &lt;admin.seguridad@mutucar-servicios.com&gt;<br><b>Asunto:</b> Actualización Obligatoria de Seguridad<hr>Estimado colaborador, es necesario que actualice sus credenciales de acceso antes de las 5 PM para evitar la suspensión de su cuenta.",
+                question: "El dominio @mutucar-servicios.com no es el oficial. ¿Cuál es tu acción?",
+                options: [
+                    { text: "Actualizar los datos rápidamente para no perder el acceso.", correct: false },
+                    { text: "Ignorar el correo y seguir trabajando.", correct: false },
+                    { text: "Reportar el correo como Phishing al equipo de Seguridad de la Información.", correct: true }
+                ],
+                feedbackCorrect: "Notaste que el dominio del remitente no corresponde al institucional.",
+                explanation: "El dominio @mutucar-servicios.com intenta parecer relacionado con la Mutualidad, pero no es el dominio institucional. Los atacantes pueden utilizar dominios parecidos para suplantar a una organización.",
+                lesson: "Revisa cuidadosamente el dominio completo del remitente antes de confiar en un correo.",
+                feedbackIncorrect: "El dominio del remitente es una señal de alerta que debía verificarse antes de actuar."
+            },
+            {
+                title: "El Desafío: Urgencia Artificial",
+                email: "<b>De:</b> Gerencia General &lt;gerencia@mutu-car.cl&gt;<br><b>Asunto:</b> URGENTE: Firma de Documento<hr>Hola, necesito que revises y firmes el documento adjunto en los próximos 10 minutos. Es la prioridad número uno del día.",
+                question: "El correo crea una presión excesiva. ¿Cómo reaccionas?",
+                options: [
+                    { text: "Abrir el adjunto inmediatamente por la urgencia del cargo.", correct: false },
+                    { text: "Llamar a la gerencia por un canal oficial para confirmar la solicitud.", correct: true },
+                    { text: "Reenviar el correo a un compañero para ver si él también lo recibió.", correct: false }
+                ],
+                feedbackCorrect: "Detectaste que la urgencia no justifica actuar sin verificar la solicitud.",
+                explanation: "El mensaje exige abrir un archivo en solo 10 minutos y utiliza el cargo de Gerencia para aumentar la presión. La urgencia puede utilizarse para evitar que la persona se detenga a comprobar el mensaje.",
+                lesson: "Cuando una solicitud es urgente e inusual, confirma por un canal oficial antes de abrir archivos o ejecutar acciones.",
+                feedbackIncorrect: "La presión por actuar rápidamente puede ser una táctica de manipulación."
+            },
+            {
+                title: "El Desafío: El Gancho Emocional",
+                email: "<b>De:</b> Recursos Humanos &lt;rrhh@mut-ucar.cl&gt;<br><b>Asunto:</b> Bonificación Especial de Desempeño<hr>Nos complace informarte que has sido seleccionado para un bono. Haz click aquí para ingresar tus datos bancarios y recibir el depósito.",
+                question: "Un premio inesperado puede ser una trampa. ¿Qué haces?",
+                options: [
+                    { text: "Ingresar los datos rápidamente para asegurar el bono.", correct: false },
+                    { text: "Verificar la veracidad del bono directamente con RRHH.", correct: true },
+                    { text: "Hacer click para ver de cuánto es el monto primero.", correct: false }
+                ],
+                feedbackCorrect: "Verificaste el supuesto bono directamente con Recursos Humanos antes de entregar información.",
+                explanation: "El correo ofrece un beneficio inesperado y solicita datos bancarios mediante un enlace. El incentivo emocional puede hacer que actuemos sin comprobar primero la legitimidad del mensaje.",
+                lesson: "Antes de entregar información financiera o personal, confirma la solicitud directamente con el área correspondiente.",
+                feedbackIncorrect: "La solicitud de datos bancarios mediante un enlace era una señal que debía verificarse."
+            },
+            {
+                title: "El Desafío: Error de Ortografía",
+                email: "<b>De:</b> Soporte Técnico &lt;soporte@mmutucar.cl&gt;<br><b>Asunto:</b> Error en la cuenta de usuario<hr>Hemos detectdo un probema con su cuenta. Por favor, ingrese sus datos para corregir el error.",
+                question: "El mensaje contiene errores ortográficos evidentes. ¿Qué significa esto?",
+                options: [
+                    { text: "Que el técnico escribió rápido, pero el mensaje es real.", correct: false },
+                    { text: "Que es un correo profesional pero con errores.", correct: false },
+                    { text: "Que es un indicio fuerte de que el correo es fraudulento.", correct: true }
+                ],
+                feedbackCorrect: "Identificaste los errores ortográficos como una señal de alerta.",
+                explanation: "El mensaje contiene errores evidentes como “detectdo” y “probema”. Estos errores no demuestran por sí solos que un correo sea fraudulento, pero sí pueden ser una señal que justifique comprobar su legitimidad.",
+                lesson: "Los errores de redacción pueden ser una señal de alerta. Analiza también el remitente, el enlace y la solicitud antes de actuar.",
+                feedbackIncorrect: "Los errores del mensaje eran una señal que debía hacerte detener y comprobar el correo."
+            },
+            {
+                title: "El Desafío: El Enlace Camuflado",
+                email: "<b>De:</b> Notificaciones TI &lt;notif@rnutucar.cl&gt;<br><b>Asunto:</b> Alerta de almacenamiento lleno<hr>Su buzón de correo está al 99%. Haga click en <a href='#' onclick='trapClicked(event)' style='color: blue; text-decoration: underline;'>AQUÍ</a> para aumentar la capacidad.",                question: "Al pasar el mouse sobre el enlace, ves que lleva a 'bit.ly/robo-datos'. ¿Qué haces?",
+                options: [
+                    { text: "Hacer click ya que el texto dice que es para el almacenamiento.", correct: false },
+                    { text: "Cerrar el correo y reportarlo inmediatamente al equipo de Seguridad de la Información.", correct: true },
+                    { text: "Intentar entrar al enlace en una ventana anónima.", correct: false }
+                ],
+                feedbackCorrect: "Comprobaste el destino real del enlace y detectaste que no correspondía con la solicitud.",
+                explanation: "El texto visible del enlace puede parecer legítimo, pero el destino real es bit.ly/robo-datos. Revisar el destino antes de hacer clic permite detectar enlaces que ocultan una dirección sospechosa.",
+                lesson: "Antes de hacer clic, comprueba el destino real del enlace y evita abrirlo si no puedes verificarlo.",
+                feedbackIncorrect: "El destino real del enlace era una señal clara de que no debías abrirlo."
+            },
+            {
+                title: "El Desafío: Solicitud de Credenciales",
+                email: "<b>De:</b> Auditoría Interna &lt;auditoria@nutucar.cl&gt;<br><b>Asunto:</b> Auditoría de Seguridad Anual<hr>Para completar la auditoría, necesitamos que nos responda este correo con su usuario y contraseña actual.",
+                question: "¿Alguna vez el área de auditoría o TI pedirá tu contraseña por correo?",
+                options: [
+                    { text: "Sí, si es para una auditoría oficial.", correct: false },
+                    { text: "Solo si el correo viene del jefe del área.", correct: false },
+                    { text: "No, nunca bajo ninguna circunstancia.", correct: true }
+                ],
+                feedbackCorrect: "Entendiste que las credenciales son personales y no deben compartirse por correo.",
+                explanation: "El mensaje solicita directamente usuario y contraseña. Las credenciales permiten acceder a sistemas y deben mantenerse bajo control exclusivo del usuario.",
+                lesson: "Nunca compartas tu contraseña por correo, aunque la solicitud parezca provenir de un área interna.",
+                feedbackIncorrect: "Una solicitud de contraseña por correo debía considerarse una señal de alerta inmediata."
+            },
+            {
+                title: "El Desafío: El Adjunto Sospechoso",
+                email: "<b>De:</b> Proveedor de Servicios &lt;facturas@prov-mutucar.com&gt;<br><b>Asunto:</b> Factura Pendiente de Pago<hr>Adjuntamos la factura del mes. Por favor revisar el archivo 'Factura_Mayo.exe' adjunto.",
+                question: "El archivo adjunto termina en .exe. ¿Qué significa esto?",
+                options: [
+                    { text: "Que es un documento PDF moderno.", correct: false },
+                    { text: "Que es un programa ejecutable y probablemente malware.", correct: true },
+                    { text: "Que es la forma correcta de enviar facturas.", correct: false }
+                ],
+                feedbackCorrect: "Identificaste que .exe corresponde a un archivo ejecutable y que no debía abrirse sin verificarlo.",
+                explanation: "Un archivo con extensión .exe es un programa ejecutable. Un adjunto de este tipo proveniente de un correo inesperado puede ejecutar código malicioso si se abre.",
+                lesson: "No abras archivos ejecutables recibidos inesperadamente. Verifica el remitente y la solicitud antes de interactuar con adjuntos.",
+                feedbackIncorrect: "La extensión .exe indica que el archivo es ejecutable y debía tratarse con especial precaución."
+            },
+            {
+                title: "El Desafío: Suplantación de Identidad",
+                email: "<b>De:</b> Jefe de Departamento &lt;jefe.dep@mutucarr.cl&gt;<br><b>Asunto:</b> Tarea Urgente<hr>Hola, estoy en una reunión y necesito que compres unas tarjetas de regalo para un cliente. Te reembolso luego.",
+                question: "Esta es una técnica de 'CEO Fraud'. ¿Cómo procedes?",
+                options: [
+                    { text: "Comprar las tarjetas para ayudar al jefe rápidamente.", correct: false },
+                    { text: "Llamar al jefe por teléfono para confirmar la solicitud.", correct: true },
+                    { text: "Responder el correo confirmando que ya lo hiciste.", correct: false }
+                ],
+                feedbackCorrect: "Verificaste la solicitud directamente con el jefe mediante otro canal.",
+                explanation: "El mensaje intenta aprovechar la identidad y autoridad del jefe para conseguir una acción rápida. Confirmar por teléfono u otro canal conocido permite comprobar que realmente fue él quien realizó la solicitud.",
+                lesson: "Si una solicitud inusual parece venir de un jefe, verifica su identidad mediante un canal independiente.",
+                feedbackIncorrect: "La solicitud debía verificarse directamente con el supuesto remitente antes de realizar cualquier compra."
+            },
+            {
+                title: "El Desafío: El Enlace Corto",
+                email: "<b>De:</b> Actualización de Nómina &lt;nomina@mutuucar.cl&gt;<br><b>Asunto:</b> Ajuste Salarial 2026<hr>Para revisar tu nuevo ajuste salarial, ingresa al siguiente enlace corto: t.co/ajuste-salarial-mutucar",
+                question: "¿Por qué es sospechoso el uso de un enlace corto en este contexto?",
+                options: [
+                    { text: "Porque los enlaces cortos son más rápidos de cargar.", correct: false },
+                    { text: "Porque ocultan el destino real del enlace.", correct: true },
+                    { text: "Porque no son compatibles con todos los navegadores.", correct: false }
+                ],
+                feedbackCorrect: "Detectaste que el enlace corto oculta el destino real.",
+                explanation: "Un enlace corto no permite identificar fácilmente a qué sitio conduce. En un correo relacionado con información salarial, esa falta de transparencia aumenta la necesidad de verificar la solicitud antes de acceder.",
+                lesson: "Cuando un enlace oculta su destino, verifica la solicitud por un canal oficial antes de abrirlo.",
+                feedbackIncorrect: "El problema no es que el enlace sea corto, sino que oculta el destino real que deberías comprobar."
+            }
+        ];
+
+        function initGame() {
+            const shuffled = [...questionPool].sort(() => 0.5 - Math.random());
+            missionQuestions = shuffled.slice(0, 3);
+            currentQuestionIndex = 0;
+            answerLocked = false;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = missionQuestions[currentQuestionIndex];
+            
+            // Actualiza el contador de preguntas en la franja verde
+            document.getElementById('header-title').innerText = `🕵️ Pregunta ${currentQuestionIndex + 1} de 3`;
+            
+            // Actualiza el nombre del desafío adentro de la tarjeta
+            document.getElementById('mission-title').innerText = q.title;
+            
+            // Actualiza el contenido del correo y la pregunta
+            document.getElementById('email-sim').innerHTML = q.email;
+            document.getElementById('step-question').innerText = q.question;
+
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt.text;
+                btn.onclick = () => checkAnswer(opt.correct, btn);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('feedback').innerText = '';
+            document.getElementById('feedback').style.backgroundColor = 'transparent';
+            document.getElementById('feedback').style.border = 'none';
+
+            updateProgressBar();
+        }
+
+        function updateProgressBar() {
+            const fill = document.getElementById('game-progress');
+            const percentage = (currentQuestionIndex / missionQuestions.length) * 100;
+            fill.style.width = percentage + '%';
+        }
+
+        function checkAnswer(isCorrect, btn) {
+            if (answerLocked) return;
+
+            const feedback = document.getElementById('feedback');
+            const buttons = document.querySelectorAll('.option-btn');
+            const q = missionQuestions[currentQuestionIndex];
+
+            if (isCorrect) {
+                answerLocked = true;
+                btn.classList.add('correct');
+                buttons.forEach(b => b.style.pointerEvents = 'none');
+
+                feedback.innerText = "¡Respuesta correcta!";
+                feedback.style.color = "var(--color-success-text)";
+                feedback.style.backgroundColor = "var(--color-success-bg)";
+                feedback.style.border = "1px solid var(--color-success-border)";
+
+                showCorrectFeedback(q);
+            } else {
+                btn.classList.add('incorrect');
+                feedback.innerText = "Revisa tu decisión y analiza la explicación.";
+                feedback.style.color = "var(--color-error-text)";
+                feedback.style.backgroundColor = "var(--color-error-bg)";
+                feedback.style.border = "1px solid var(--color-error-border)";
+
+                showIncorrectFeedback(q);
+
+                setTimeout(() => {
+                    btn.classList.remove('incorrect');
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUTUCAR | Etapa 4: El Guardián Digital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Open+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-brand:           #2E4D23;
+            --color-brand-hover:     #1E3316;
+            --color-brand-light:     #E8EFDF;
+            --color-brand-mid:       #BDC7B1;
+            --color-brand-text:      #C7D9DF;
+            --color-bg:              #F1EDE4;
+            --color-surface:         #FFFFFF;
+            --color-border:          #C7D9DF;
+            --color-border-mid:      #75A5BD;
+            --color-text-primary:    #292648;
+            --color-text-body:       #555555;
+            --color-text-muted:      #4F6B78;
+            --color-success:         #26443C;
+            --color-success-bg:      #D5EFD8;
+            --color-success-border:  #91D2C2;
+            --color-success-text:    #26443C;
+            --color-error:           #872F3E;
+            --color-error-bg:        #FBEAE8;
+            --color-error-border:    #F6A08F;
+            --color-error-text:      #562F35;
+            --color-warning:         #B8860B;
+            --color-warning-bg:      #FEFAD9;
+            --color-warning-border:  #DFB67C;
+            --color-warning-text:    #5A3D14;
+            --header-from:           #292648;
+            --header-to:             #2E4D23;
+            --shadow-card:  0 1px 3px 0 rgba(0,0,0,0.08), 0 1px 2px -1px rgba(0,0,0,0.06);
+            --shadow-brand: 0 4px 12px rgba(46, 77, 35, 0.25);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--color-bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: var(--color-text-body);
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, .brand-font { font-family: 'Chakra Petch', sans-serif; }
+
+        .email-container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid var(--color-border);
+            overflow: hidden;
+            margin-bottom: 60px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .email-meta {
+            background: #f9f9f9;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            color: #666;
+        }
+        .email-meta div { margin-bottom: 5px; }
+        .email-meta strong { color: var(--color-text-primary); }
+
+        .email-header {
+            background: linear-gradient(135deg, var(--header-from), var(--header-to));
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .email-header h2 { margin: 0; font-size: 24px; text-transform: uppercase; }
+
+        .email-body { padding: 30px; line-height: 1.7; text-align: center; }
+        .email-body h3 { color: var(--color-text-primary); margin-top: 0; }
+
+        .instruction-box {
+            background: var(--color-bg);
+            border-left: 4px solid var(--color-brand);
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            font-style: italic;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 260px;
+            margin: 30px auto;
+            padding: 15px 30px;
+            background: var(--color-brand);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-family: 'Chakra Petch', sans-serif;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            box-shadow: var(--shadow-brand);
+        }
+        .btn-action:hover { background: var(--color-brand-hover); transform: scale(1.05); }
+
+        /* ESTILOS DEL MODAL DE FEEDBACK DE ERROR */
+        .feedback-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 520px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            border: 2px solid var(--color-error);
+            z-index: 1000;
+            text-align: center;
+            animation: modalSlideUp 0.35s ease;
+        }
+        .feedback-panel.active { display: block; }
+        
+        .feedback-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.72);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+        }
+        .feedback-overlay.active { display: block; }
+
+        @keyframes modalSlideUp { from { opacity: 0; transform: translate(-50%, calc(-50% + 30px)); } to { opacity: 1; transform: translate(-50%, -50%); } }
+
+        .feedback-icon { font-size: 42px; margin-bottom: 10px; }
+        .feedback-panel h3 {
+            font-family: 'Chakra Petch', sans-serif;
+            color: var(--color-error);
+            margin: 0 0 15px;
+            text-transform: uppercase;
+        }
+        .feedback-panel p { line-height: 1.6; color: var(--color-text-body); margin: 10px 0; }
+
+        .feedback-explanation {
+            background: var(--color-error-bg);
+            border: 1px solid var(--color-error-border);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .feedback-explanation strong { display: block; color: var(--color-error-text); margin-bottom: 6px; }
+
+        .feedback-lesson {
+            background: var(--color-warning-bg);
+            border: 1px solid var(--color-warning-border);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0 20px;
+            text-align: left;
+        }
+        .feedback-lesson strong { display: block; color: var(--color-warning-text); margin-bottom: 6px; }
+
+        .btn-feedback {
+            width: 100%;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 50px;
+            background: var(--color-brand);
+            color: white;
+            font-family: 'Chakra Petch', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: var(--shadow-brand);
+            transition: all 0.2s;
+        }
+        .btn-feedback:hover { background: var(--color-brand-hover); transform: scale(1.02); }
+
+        /* PANEL DE ACIERTO */
+        .success-panel {
+            display: none;
+            position: absolute;
+            left: calc(100% + 20px);
+            top: 0;
+            width: 280px;
+            background: white;
+            border: 2px solid var(--color-success-border);
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            text-align: center;
+            animation: fadeIn 0.35s ease;
+        }
+        .success-panel.active { display: block; }
+        .success-panel h3 {
+            margin: 8px 0 10px;
+            color: var(--color-success-text);
+            font-family: 'Chakra Petch', sans-serif;
+            text-transform: uppercase;
+        }
+        .success-panel p { font-size: 14px; line-height: 1.55; color: var(--color-text-body); }
+        
+        .robot-placeholder {
+            width: 95px;
+            height: 95px;
+            margin: 0 auto 10px;
+            border-radius: 50%;
+            background: var(--color-brand-light);
+            border: 2px solid var(--color-brand-mid);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .btn-continue {
+            width: 100%;
+            padding: 12px 18px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 50px;
+            background: var(--color-brand);
+            color: white;
+            font-family: 'Chakra Petch', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: var(--shadow-brand);
+        }
+        .btn-continue:hover { background: var(--color-brand-hover); transform: scale(1.02); }
+
+        /* ESTILOS DEL JUEGO */
+        .game-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        @media (max-width: 1050px) {
+            .success-panel {
+                position: static;
+                width: 100%;
+                margin-top: 20px;
+            }
+        }
+
+        .game-container {
+            width: 100%;
+            background: var(--color-surface);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+            display: none;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .slide-header {
+            background: linear-gradient(to right, var(--header-from), var(--header-to));
+            padding: 25px;
+            color: white;
+            text-align: center;
+        }
+        .slide-header h2 { margin: 0; font-size: 24px; text-transform: uppercase; }
+        .slide-header p { margin: 5px 0 0; opacity: 0.9; font-size: 14px; }
+
+        .progress-container { padding: 20px 30px 0; }
+        .progress-bar {
+            background-color: var(--color-border);
+            border-radius: 9999px;
+            height: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background-color: var(--color-brand);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .game-area { padding: 30px; text-align: center; }
+        .mission-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-card);
+            text-align: left;
+        }
+        .mission-card h3 { margin: 0 0 15px 0; color: var(--color-text-primary); font-size: 18px; text-align: center; }
+
+        .email-simulator {
+            background: #fdfdfd;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 14px;
+            color: #444;
+        }
+        .email-simulator hr { border: 0; border-top: 1px solid #ddd; margin: 10px 0; }
+
+        .step-question {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--color-text-primary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .options-grid { display: grid; gap: 12px; }
+        .option-btn {
+            padding: 16px;
+            background: white;
+            border: 2px solid var(--color-border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 15px;
+            text-align: left;
+            color: #444;
+            font-weight: 500;
+        }
+        .option-btn:hover { border-color: var(--color-brand); background: #f8faff; }
+        .option-btn.correct { background: var(--color-success-bg) !important; border-color: var(--color-success-border) !important; color: var(--color-success-text); font-weight: bold; }
+        .option-btn.incorrect { background: var(--color-error-bg) !important; border-color: var(--color-error-border) !important; color: var(--color-error-text); }
+
+        #feedback { margin-top: 20px; font-weight: 600; min-height: 24px; font-size: 15px; text-align: center; padding: 10px; border-radius: 8px; transition: all 0.3s; }
+
+        #reward-view { display: none; padding: 40px 30px; text-align: center; }
+
+        .btn-register {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 260px;
+            margin: 20px auto;
+            padding: 16px;
+            background: var(--color-brand);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-family: 'Chakra Petch', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-brand);
+        }
+        .btn-register:hover { transform: scale(1.05); background: var(--color-brand-hover); }
+
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+    </style>
+</head>
+<body id="top">
+
+    <!-- SECCIÓN 1: EL CORREO (BRIEFING) -->
+    <div class="email-container" id="email-section">
+        <div class="email-meta">
+            <div><strong>De:</strong> Comando de Ciberseguridad MUTUCAR &lt;seguridad@mutucar.cl&gt;</div>
+            <div><strong>Para:</strong> Guardián en Entrenamiento</div>
+            <div><strong>Asunto:</strong> Misión 4: El Guardián Digital - Briefing Final</div>
+        </div>
+        <div class="email-header">
+            <h2>🛡️ LA PRUEBA FINAL</h2>
+        </div>
+        <div class="email-body">
+            <h3>¡Has llegado al final, Mutuguardián!</h3>
+            <p>Has superado el phishing, la ingeniería social y las amenazas físicas. Ahora llegamos a la última línea de defensa: <strong>La Gestión de Identidad y Contraseñas.</strong></p>
+            <p>Toda la seguridad anterior es inútil si la llave de entrada es débil, se reutiliza o está expuesta. En esta etapa final, aprenderás a crear muros infranqueables alrededor de tu acceso digital.</p>
+            <div style="text-align: center; margin: 20px 0;">
+                <img src="https://dintt.github.io/mutucar-assets/Mutualidad%20Pixelada.png" width="600" alt="La mutualidad pixelada" style="width:100%;max-width:600px;height:auto;display:block;margin: 0 auto;">
+            </div>
+            
+            <div style="padding: 0 40px 32px; text-align: center;">
+                <p style="margin:0 0 12px;font-family: 'Open Sans', Arial, sans-serif;font-size:12px;line-height:16px;font-weight:600;color:#555555;letter-spacing:1px;">TU CAMINO EN EL APRENDIZAJE</p>
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin: 0 auto;">
+                    <tbody>
+                        <tr>
+                            <td width="25%" align="center" style="padding:0 4px;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tbody><tr><td height="8" style="background-color:#7dbb67;border-radius:4px;font-size:0;line-height:0;">&nbsp;</td></tr></tbody></table>
+                                <p style="margin:10px 0 0;font-family: 'Open Sans', Arial, sans-serif;font-size:12px;line-height:16px;font-weight:600;color:#7dbb67;">Etapa 1 - Lista</p>
+                            </td>
+                            <td width="25%" align="center" style="padding:0 4px;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tbody><tr><td height="8" style="background-color:#7dbb67;border-radius:4px;font-size:0;line-height:0;">&nbsp;</td></tr></tbody></table>
+                                <p style="margin:10px 0 0;font-family: 'Open Sans', Arial, sans-serif;font-size:12px;line-height:16px;font-weight:600;color:#7dbb67;">Etapa 2 - Lista</p>
+                            </td>
+                            <td width="25%" align="center" style="padding:0 4px;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tbody><tr><td height="8" style="background-color:#7dbb67;border-radius:4px;font-size:0;line-height:0;">&nbsp;</td></tr></tbody></table>
+                                <p style="margin:10px 0 0;font-family: 'Open Sans', Arial, sans-serif;font-size:12px;line-height:16px;font-weight:600;color:#7dbb67;">Etapa 3 - Lista</p>
+                            </td>
+                            <td width="25%" align="center" style="padding:0 4px;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tbody><tr><td height="8" style="background-color:#2E4D23;border-radius:4px;font-size:0;line-height:0;">&nbsp;</td></tr></tbody></table>
+                                <p style="margin:10px 0 0;font-family: 'Open Sans', Arial, sans-serif;font-size:12px;line-height:16px;font-weight:600;color:#2E4D23;">Etapa 4 - En curso</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <h3>TU MISIÓN DE HOY: EL ESCENARIO</h3>
+            <p>Durante esta etapa evaluarás 3 escenarios relacionados con la creación, almacenamiento y protección de contraseñas.</p>
+            <p>Deberás tomar decisiones sobre la robustez de tus claves, el uso de Doble Factor de Autenticación (MFA) y los hábitos seguros para gestionar tus accesos corporativos.</p>
+            <hr>
+            <h3 style="margin-top: 20px;">LA REGLA DE ORO</h3>
+            <div class="instruction-box" style="text-align: center; font-style: normal; font-weight: bold;">COMPLEJIDAD ➤ UNICIDAD ➤ DOBLE FACTOR (MFA)</div>
+            <p>Una contraseña segura debe ser larga, compleja y única para cada plataforma. No recicles claves personales en el trabajo. Activa siempre el MFA para blindar tus accesos.</p>
+            
+            <hr style="border: 0; border-top: 1px solid var(--color-border); margin: 20px 0;">
+            
+            <h3 style="margin-top: 15px;">INSTRUCCIONES DEL JUEGO</h3>
+            <div style="margin-top: 15px;" class="instruction-box">
+                1. Lee cuidadosamente el escenario de seguridad que aparecerá en pantalla.<br>
+                2. Evalúa si la práctica descrita es segura o riesgosa.<br>
+                3. Selecciona la opción que proteja mejor el acceso a la información.<br>
+                4. Completa los 3 desafíos finales para superar el entrenamiento.<br>
+                5. Al finalizar, registra tu graduación y obtén tu última Estampa de Honor.
+            </div>
+            <p>Estás a un paso de obtener el rango de Guardián Digital de la Mutualidad. ¡No falles en el último obstáculo!</p>
+
+            <!-- AQUI ESTA EL ARREGLO: EL BOTON APUNTA DIRECTO A UNLOCKGAME() -->
+            <button type="button" class="btn-action" onclick="unlockGame()">ACCEDER A LA MISIÓN FINAL</button>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 2: EL JUEGO (DESAFÍO) -->
+    <div class="game-wrapper" id="game-wrapper">
+        <div class="game-container" id="game-section">
+            <div id="game-view">
+                <!-- Encabezado verde (Fijo) -->
+                <div class="slide-header">
+                    <h2 id="header-title">🕵️ Pregunta 1 de 3</h2>
+                    <p>Etapa 4: El Guardián Digital</p>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar"><div class="progress-fill" id="game-progress"></div></div>
+                </div>
+                
+                <!-- Cuerpo de la tarjeta (Dinámico) -->
+                <div class="game-area">
+                    <div class="mission-card">
+                        <h3 id="mission-title" style="margin: 0 0 15px 0; color: var(--color-text-primary); font-size: 18px; text-align: center;">Cargando desafío...</h3>
+                        
+                        <div class="email-simulator" id="email-sim">
+                            <!-- Dinámico -->
+                        </div>
+                        
+                        <p class="step-question" id="step-question">Cargando pregunta...</p>
+                        <div class="options-grid" id="options">
+                            <!-- Dinámico -->
+                        </div>
+                        <p id="feedback"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="reward-view" class="fade-in">
+                <h2 style="color: var(--color-brand); font-size: 28px; margin: 10px 0;">¡FELICITACIONES, GUARDIÁN! 🏆</h2>
+                <p style="font-size: 16px; margin-bottom: 30px;">Has completado todas las etapas del Ciberdojo. Ahora posees los conocimientos para proteger a la Mutualidad contra las amenazas más comunes.</p>
+                <!-- Encabezado de victoria -->
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="https://dintt.github.io/mutucar-assets/Carabinero%20Premiado.PNG" alt="Graduación Cumplida" style="width:100%; max-width:400px; height:auto; display:block; margin: 0 auto;">
+                </div>
+                <!-- Zona de la Estampa y Descarga (Ajustado para Estampa 4) -->
+                <div style="background: white; border: 2px dashed var(--color-border-mid); border-radius: 15px; padding: 30px; margin-bottom: 30px;">
+                    <button type="button" onclick="downloadStamp()" class="btn-action" style="width: auto; padding: 12px 30px; background: var(--color-border-mid); font-size: 14px;">⬇️ DESCARGAR ESTAMPA FINAL</button>
+                </div>
+
+                <!-- Zona del Formulario (Fin del curso) -->
+                <div style="background: var(--color-brand-light); padding: 25px; border-radius: 12px; border: 1px solid var(--color-brand-mid);">
+                    <p style="margin: 0; font-weight: bold; color: var(--color-brand); font-size: 16px;">REGISTRO FINAL DE GRADUACIÓN:</p>
+                    <p style="margin: 8px 0 20px; font-size: 14px;">Para recibir tu validación oficial y cerrar tu proceso de concientización, completa el registro final:</p>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <a href="https://forms.cloud.microsoft/r/M5Fhx3he8s" target="_blank" class="btn-register" style="margin: 0; width: 100%; max-width: 300px;">📋 REGISTRAR GRADUACIÓN</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL DE ACIERTO -->
+        <div class="success-panel" id="success-panel">
+            <div class="robot-placeholder" id="robot-placeholder">🤖</div>
+            <h3>¡Muy bien, Guardián!</h3>
+            <p id="success-message">Esa es la decisión correcta.</p>
+            <button class="btn-continue" onclick="continueAfterCorrect()">CONTINUAR →</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE APRENDIZAJE POR ERROR (FEEDBACK) -->
+    <div class="feedback-overlay" id="feedback-overlay"></div>
+    <div class="feedback-panel" id="feedback-panel">
+        <div class="feedback-icon">⚠️</div>
+        <h3>Esa decisión era riesgosa</h3>
+        <p id="feedback-intro"></p>
+
+        <div class="feedback-explanation">
+            <strong>¿Por qué?</strong>
+            <span id="feedback-explanation"></span>
+        </div>
+
+        <div class="feedback-lesson">
+            <strong>💡 Recuerda</strong>
+            <span id="feedback-lesson"></span>
+        </div>
+
+        <button class="btn-feedback" onclick="closeIncorrectFeedback()">ENTENDIDO, VOLVER A INTENTAR</button>
+    </div>
+
+    <script>
+        // --- LÓGICA DEL JUEGO (FLUJO Y DESCARGA) ---
+        let currentQuestionIndex = 0;
+        let missionQuestions = [];
+        let answerLocked = false;
+
+        function unlockGame() {
+            const emailSection = document.getElementById('email-section');
+            const gameSection = document.getElementById('game-section');
+
+            if (emailSection) emailSection.style.display = 'none';
+            if (gameSection) gameSection.style.display = 'block';
+
+            initGame();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function downloadStamp() {
+            const imageUrl = 'https://dintt.github.io/mutucar-assets/Estampa4.jfif';
+            const fileName = 'Estampa-Honor-Mutucar-4.jpg';
+
+            fetch(imageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const blobUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(blobUrl);
+                })
+                .catch(error => {
+                    window.open(imageUrl, '_blank');
+                });
+        }
+
+        function showIncorrectFeedback(q) {
+            document.getElementById('feedback-intro').innerText =
+                'La acción seleccionada debilita gravemente tu acceso digital.';
+
+            document.getElementById('feedback-explanation').innerText = q.explanation;
+            document.getElementById('feedback-lesson').innerText = q.lesson;
+
+            document.getElementById('feedback-overlay').classList.add('active');
+            document.getElementById('feedback-panel').classList.add('active');
+        }
+
+        function closeIncorrectFeedback() {
+            document.getElementById('feedback-overlay').classList.remove('active');
+            document.getElementById('feedback-panel').classList.remove('active');
+            answerLocked = false;
+        }
+
+        function showCorrectFeedback(q) {
+            document.getElementById('success-message').innerText = q.feedbackCorrect;
+            document.getElementById('success-panel').classList.add('active');
+        }
+
+        function continueAfterCorrect() {
+            document.getElementById('success-panel').classList.remove('active');
+
+            currentQuestionIndex++;
+            answerLocked = false;
+
+            if (currentQuestionIndex < missionQuestions.length) {
+                renderQuestion();
+            } else {
+                document.getElementById('game-progress').style.width = '100%';
+                document.getElementById('game-view').classList.add('hidden');
+                document.getElementById('reward-view').style.display = 'block';
+            }
+        }
+
+        // --- LÓGICA DEL JUEGO DINÁMICO (PREGUNTAS ETAPA 4: GESTIÓN DE IDENTIDAD) ---
+        const questionPool = [
+            {
+                title: "El Desafío: La Contraseña 'Fácil'",
+                email: "<b>Escenario:</b> Estás creando tu contraseña para el nuevo portal de la Mutualidad. Tienes prisa y quieres algo fácil de recordar.",
+                question: "¿Cuál de estas opciones es la más SEGURA para tu cuenta?",
+                options: [
+                    { text: "Mutucar2024", correct: false },
+                    { text: "12345678", correct: false },
+                    { text: "G#p7!Lw@2zR9*", correct: true }
+                ],
+                feedbackCorrect: "✅ ¡Correcto! Una combinación larga y compleja de símbolos y letras es la base de una contraseña fuerte.",
+                explanation: "Las contraseñas cortas o que contienen palabras de diccionario o el nombre de la empresa se descifran en segundos mediante ataques automatizados (fuerza bruta).",
+                lesson: "Usa contraseñas largas (más de 12 caracteres) combinando mayúsculas, minúsculas, números y símbolos especiales."
+            },
+            {
+                title: "El Desafío: El Reciclaje de Claves",
+                email: "<b>Situación:</b> Usas la misma contraseña para tu correo personal, tu red social y el acceso al servidor de la Mutualidad porque así no se te olvida.",
+                question: "¿Qué riesgo corres al reutilizar la misma contraseña en múltiples sitios?",
+                options: [
+                    { text: "Ninguno, si la contraseña es larga es segura en todos lados.", correct: false },
+                    { text: "Efecto Dominó: si hackean la red social, ya tienen la llave de la Mutualidad.", correct: true },
+                    { text: "Que el sistema de la Mutualidad te obligue a cambiarla cada mes.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Exacto! La reutilización de claves es un error crítico. Cada cuenta debe tener una llave única.",
+                explanation: "Si una plataforma externa sufre una filtración de datos, los atacantes tomarán esa clave robada y la probarán automáticamente en tus cuentas corporativas (ataque 'Credential Stuffing').",
+                lesson: "Usa una contraseña única para cada servicio importante. Nunca mezcles tus claves personales con las del trabajo."
+            },
+            {
+                title: "El Desafío: El Post-it Olvidado",
+                email: "<b>Escenario:</b> Un colega anota su contraseña en un post-it y lo pega en el marco del monitor para no olvidarla.",
+                question: "¿Por qué esta práctica es peligrosa en un entorno de oficina?",
+                options: [
+                    { text: "Porque el post-it puede despegarse y caer al suelo.", correct: false },
+                    { text: "Porque cualquier persona (limpieza, visitas, colegas) puede ver la clave.", correct: true },
+                    { text: "Porque el pegamento del post-it puede dañar el monitor.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Correcto! La seguridad física es parte de la seguridad digital. Jamás anotes claves en lugares visibles.",
+                explanation: "La seguridad digital se vuelve inútil si la clave está físicamente expuesta. Cualquiera que pase por tu escritorio puede tomar una foto y acceder a la red.",
+                lesson: "Jamás anotes contraseñas en papeles. Utiliza reglas para memorizarlas o un gestor de contraseñas aprobado."
+            },
+            {
+                title: "El Desafío: El Segundo Factor (MFA)",
+                email: "<b>Situación:</b> El sistema te pide activar la Autenticación de Dos Factores (MFA) mediante un código que llega a tu celular.",
+                question: "¿Cuál es la principal ventaja de activar el MFA?",
+                options: [
+                    { text: "Que ya no necesito recordar mi contraseña.", correct: false },
+                    { text: "Que aunque alguien robe mi contraseña, no podrá entrar sin mi celular.", correct: true },
+                    { text: "Que el inicio de sesión es más rápido.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Muy bien! El MFA es la barrera más efectiva contra el robo de identidad.",
+                explanation: "El MFA exige que demuestres quién eres con algo que 'sabes' (la clave) y algo que 'tienes' (tu teléfono). Así, una clave robada no sirve de nada por sí sola.",
+                lesson: "Activa siempre el Doble Factor en todas tus cuentas corporativas y personales. Es tu mejor escudo."
+            },
+            {
+                title: "El Desafío: La Solicitud de Clave",
+                email: "<b>Mensaje de Chat:</b> 'Hola, soy de TI. Estamos haciendo una auditoría rápida. Por favor, envíame tu contraseña actual por aquí para verificar que cumple los requisitos'.",
+                question: "¿Cómo debes reaccionar ante este mensaje?",
+                options: [
+                    { text: "Enviarla rápidamente para ayudar a la auditoría.", correct: false },
+                    { text: "Negar la información y reportar la solicitud al área de Seguridad.", correct: true },
+                    { text: "Enviarla pero pedir que la borren después.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Correcto! El personal de TI legítimo NUNCA te pedirá tu contraseña.",
+                explanation: "Esta es una técnica clásica de ingeniería social. El personal de soporte nunca necesita tu contraseña personal para realizar auditorías, mantenimiento o configuraciones en los sistemas.",
+                lesson: "Tu contraseña es estrictamente confidencial. Nunca la compartas por chat, correo o teléfono con nadie, ni siquiera con tus jefes o soporte técnico."
+            },
+            {
+                title: "El Desafío: El Gestor de Contraseñas",
+                email: "<b>Escenario:</b> Tienes 15 cuentas diferentes y ya no puedes recordar todas las contraseñas fuertes y únicas que creaste.",
+                question: "¿Cuál es la herramienta recomendada para gestionar esto de forma segura?",
+                options: [
+                    { text: "Un archivo de Excel llamado 'claves.xlsx' en el escritorio.", correct: false },
+                    { text: "Un Gestor de Contraseñas (Password Manager) cifrado.", correct: true },
+                    { text: "Anotarlas todas en una libreta física en el cajón.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Correcto! Los gestores de contraseñas cifran tus claves y te permiten tener una sola 'maestra'.",
+                explanation: "Anotar claves en archivos sin cifrar (como Excel o Word) en tu escritorio permite que cualquier malware las robe fácilmente con un solo clic.",
+                lesson: "Usa un Gestor de Contraseñas corporativo para generar y almacenar claves robustas. Así solo tendrás que recordar una única contraseña maestra."
+            },
+            {
+                title: "El Desafío: La Clave por Defecto",
+                email: "<b>Situación:</b> Instalas un nuevo software de gestión o enciendes un equipo y el sistema te indica que la contraseña inicial es 'Admin123'.",
+                question: "¿Qué es lo primero que debes hacer al iniciar sesión?",
+                options: [
+                    { text: "Dejarla así mientras pruebo que el programa funcione.", correct: false },
+                    { text: "Cambiar la contraseña inmediatamente por una fuerte y personal.", correct: true },
+                    { text: "Anotar la clave 'Admin123' en la documentación del sistema.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Exacto! Las contraseñas por defecto son conocidas por todos los atacantes del mundo.",
+                explanation: "Las contraseñas de fábrica o por defecto (como Admin, 0000, 1234) están listadas en internet. Dejarlas es como ponerle un candado a la puerta y dejar la llave colgada al lado.",
+                lesson: "Cambia inmediatamente cualquier contraseña por defecto que venga de fábrica en un sistema, router, dispositivo o aplicación."
+            },
+            {
+                title: "El Desafío: El Bloqueo de Sesión",
+                email: "<b>Escenario:</b> Te levantas de tu puesto en la oficina por 2 minutos para ir a buscar un café o saludar a un colega.",
+                question: "¿Cuál es el hábito de seguridad correcto antes de dejar tu escritorio?",
+                options: [
+                    { text: "No hacer nada, solo son 2 minutos y nadie entrará.", correct: false },
+                    { text: "Bloquear la sesión de la computadora (Tecla Windows + L).", correct: true },
+                    { text: "Apagar el monitor para que no se vea lo que estás haciendo.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Muy bien! Bloquear la sesión evita que alguien acceda a tu cuenta en tu ausencia.",
+                explanation: "Dejar el equipo desbloqueado permite que cualquier persona que pase envíe correos en tu nombre, descargue malware o robe información de la Mutualidad en cuestión de segundos.",
+                lesson: "Adopta el hábito de bloquear siempre tu sesión (Windows + L) en el instante en que te levantes de tu silla, sin excepciones."
+            },
+            {
+                title: "El Desafío: La Clave 'Fuerte' Engañosa",
+                email: "<b>Análisis:</b> Alguien sugiere que 'Mutucar2026!' es una contraseña fuerte porque tiene mayúscula, minúsculas, número y un símbolo.",
+                question: "¿Es realmente segura esta contraseña?",
+                options: [
+                    { text: "Sí, cumple con todos los requisitos técnicos exigidos.", correct: false },
+                    { text: "No, porque usa una palabra obvia y una secuencia muy predecible.", correct: true },
+                    { text: "Solo es segura si se cambia rigurosamente cada 30 días.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Correcto! Los atacantes usan software que prueba variaciones de palabras obvias al instante.",
+                explanation: "Agregar '2026!' al nombre de la empresa, tu nombre o la palabra 'Password' es un patrón extremadamente predecible que los algoritmos de hackeo descifran de inmediato.",
+                lesson: "Evita patrones predecibles. Usa 'frases de contraseña' largas o generadores de caracteres aleatorios que no tengan relación con tu vida personal o trabajo."
+            },
+            {
+                title: "El Desafío: La Alerta de Inicio de Sesión",
+                email: "<b>Notificación:</b> Recibes un correo automático oficial que dice: 'Se ha iniciado sesión en tu cuenta desde un dispositivo en Rusia'. Tú estás en tu oficina en Chile.",
+                question: "¿Cuál es la acción inmediata más importante?",
+                options: [
+                    { text: "Ignorar el correo, probablemente sea un error temporal del sistema.", correct: false },
+                    { text: "Cambiar tu contraseña inmediatamente y reportarlo al área de Seguridad.", correct: true },
+                    { text: "Esperar a ver si desaparecen archivos antes de entrar en pánico.", correct: false }
+                ],
+                feedbackCorrect: "✅ ¡Exacto! Una alerta inusual es señal de que tu barrera ha sido vulnerada.",
+                explanation: "Una notificación oficial de inicio de sesión desde un dispositivo u ubicación desconocida significa que un atacante ya logró robar tu contraseña y está dentro de tu cuenta.",
+                lesson: "Ante una alerta de inicio de sesión sospechoso, asume que tu clave está comprometida. Cámbiala de inmediato y activa el doble factor de autenticación."
+            }
+        ];
+
+        function initGame() {
+            const shuffled = [...questionPool].sort(() => 0.5 - Math.random());
+            missionQuestions = shuffled.slice(0, 3);
+            currentQuestionIndex = 0;
+            answerLocked = false;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = missionQuestions[currentQuestionIndex];
+            
+            // Actualiza el contador de preguntas en la franja verde
+            document.getElementById('header-title').innerText = `🕵️ Pregunta ${currentQuestionIndex + 1} de 3`;
+            
+            // Actualiza el nombre del desafío adentro de la tarjeta
+            document.getElementById('mission-title').innerText = q.title;
+            
+            // Actualiza el contenido del correo y la pregunta
+            document.getElementById('email-sim').innerHTML = q.email;
+            document.getElementById('step-question').innerText = q.question;
+
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt.text;
+                btn.onclick = () => checkAnswer(opt.correct, btn);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('feedback').innerText = '';
+            document.getElementById('feedback').style.backgroundColor = 'transparent';
+            document.getElementById('feedback').style.border = 'none';
+
+            updateProgressBar();
+        }
+
+        function updateProgressBar() {
+            const fill = document.getElementById('game-progress');
+            const percentage = (currentQuestionIndex / missionQuestions.length) * 100;
+            if (fill) fill.style.width = percentage + '%';
+        }
+
+        function checkAnswer(isCorrect, btn) {
+            if (answerLocked) return;
+
+            const feedback = document.getElementById('feedback');
+            const buttons = document.querySelectorAll('.option-btn');
+            const q = missionQuestions[currentQuestionIndex];
+
+            if (isCorrect) {
+                answerLocked = true;
+                btn.classList.add('correct');
+                buttons.forEach(b => b.style.pointerEvents = 'none');
+
+                feedback.innerText = "¡Respuesta correcta!";
+                feedback.style.color = "var(--color-success-text)";
+                feedback.style.backgroundColor = "var(--color-success-bg)";
+                feedback.style.border = "1px solid var(--color-success-border)";
+
+                showCorrectFeedback(q);
+            } else {
+                btn.classList.add('incorrect');
+                feedback.innerText = "Revisa tu decisión y analiza la explicación.";
+                feedback.style.color = "var(--color-error-text)";
+                feedback.style.backgroundColor = "var(--color-error-bg)";
+                feedback.style.border = "1px solid var(--color-error-border)";
+
+                showIncorrectFeedback(q);
+
+                setTimeout(() => {
+                    btn.classList.remove('incorrect');
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>
